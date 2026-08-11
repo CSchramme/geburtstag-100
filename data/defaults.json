@@ -1,0 +1,59 @@
+{
+  "party": {
+    "coupleNames": "Tamara & Ralph",
+    "eventTitle": "100 Jahre – Ein Hoffest",
+    "subtitle": "Zwei Throne, ein Jahrhundert Lebensfreude",
+    "date": "",
+    "time": "",
+    "location": "",
+    "locationAddress": "",
+    "introText": "Erhebt die Becher! An diesem Tage feiern Tamara und Ralph gemeinsam ihr einhundertstes Lebensjahr. Seid geladen zu einem Hoffest voller Musik, Ratespiele und Geschichten aus dem Reich.",
+    "dressCode": "Mittelalterlich-festliche Gewandung erwünscht"
+  },
+  "agenda": [],
+  "chronicle": [],
+  "ticker": {
+    "text": "",
+    "active": false
+  },
+  "music": {
+    "nowPlaying": null,
+    "playlists": {
+      "nebenbei": "",
+      "vibe": "",
+      "party": ""
+    }
+  },
+  "countdown": {
+    "active": false,
+    "endsAt": null,
+    "durationSeconds": 0,
+    "label": "Es ist gleich soweit"
+  },
+  "quiz": {
+    "rounds": [
+      { "id": "r1", "name": "Runde 1", "candidates": [] },
+      { "id": "r2", "name": "Runde 2", "candidates": [] },
+      { "id": "r3", "name": "Runde 3", "candidates": [] }
+    ],
+    "activeRoundId": "r1",
+    "activeCandidateIndex": 0,
+    "revealedClueCount": 0,
+    "answerRevealed": false,
+    "visible": false
+  },
+  "presentation": {
+    "mode": "none",
+    "embedUrl": "",
+    "slides": [],
+    "currentSlideIndex": 0
+  },
+  "display": {
+    "scene": "idle"
+  },
+  "guestbook": [],
+  "gallery": [],
+  "impressum": {
+    "text": "Diese Seite dient ausschließlich der privaten Nutzung im Rahmen einer geschlossenen Geburtstagsfeier von Tamara & Ralph.\n\nVerantwortlich: [Name, Anschrift eintragen]\nKontakt: [E-Mail eintragen]"
+  }
+}

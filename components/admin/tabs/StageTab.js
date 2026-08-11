@@ -1,0 +1,214 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { api } from '@/lib/api';
+import CountdownClock from '@/components/CountdownClock';
+
+const SCENES = [
+  { id: 'idle', label: 'Wappen' },
+  { id: 'agenda', label: 'Ablauf' },
+  { id: 'chronicle', label: 'Chronik' },
+  { id: 'countdown', label: 'Countdown' },
+  { id: 'quiz', label: 'Hofnarr' },
+  { id: 'presentation', label: 'Präsentation' },
+  { id: 'gallery', label: 'Galerie' },
+  { id: 'guestbook', label: 'Gästebuch' }
+];
+
+export default function StageTab({ display, ticker, countdown, presentation }) {
+  return (
+    <div className="stack">
+      <SceneSwitcher active={display.scene} />
+      <TickerPanel ticker={ticker} />
+      <CountdownPanel countdown={countdown} />
+      <PresentationPanel presentation={presentation} />
+    </div>
+  );
+}
+
+function SceneSwitcher({ active }) {
+  async function setScene(scene) {
+    await api('/api/admin/display', { method: 'PUT', body: { scene } });
+  }
+
+  return (
+    <div className="panel">
+      <p className="panel-title">Was zeigt der Beamer?</p>
+      <div className="scene-grid">
+        {SCENES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            className={`btn ${active === s.id ? 'btn-gold' : 'btn-ghost'}`}
+            onClick={() => setScene(s.id)}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TickerPanel({ ticker }) {
+  const [text, setText] = useState(ticker.text);
+
+  async function save(next) {
+    await api('/api/admin/ticker', { method: 'PUT', body: next });
+  }
+
+  return (
+    <div className="panel">
+      <div className="spread">
+        <p className="panel-title mt-0">Laufschrift</p>
+        <button
+          type="button"
+          className={`seal-toggle ${ticker.active ? 'is-on' : ''}`}
+          onClick={() => save({ text, active: !ticker.active })}
+          aria-pressed={ticker.active}
+          aria-label="Laufschrift ein-/ausblenden"
+        />
+      </div>
+      <div className="field">
+        <textarea
+          className="textarea"
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={() => save({ text, active: ticker.active })}
+          placeholder="z.B. Der Met wird um 20 Uhr ausgeschenkt …"
+        />
+      </div>
+    </div>
+  );
+}
+
+function CountdownPanel({ countdown }) {
+  const [seconds, setSeconds] = useState(countdown.durationSeconds || 60);
+  const [label, setLabel] = useState(countdown.label || '');
+
+  async function start() {
+    await api('/api/admin/countdown', { method: 'POST', body: { action: 'start', durationSeconds: Number(seconds), label } });
+  }
+  async function stop() {
+    await api('/api/admin/countdown', { method: 'POST', body: { action: 'stop' } });
+  }
+
+  return (
+    <div className="panel">
+      <p className="panel-title">Countdown</p>
+      {countdown.active && countdown.endsAt ? (
+        <div className="center-text">
+          <CountdownClock endsAt={countdown.endsAt} />
+          <button type="button" className="btn btn-wine btn-sm" style={{ marginTop: 12 }} onClick={stop}>
+            Countdown stoppen
+          </button>
+        </div>
+      ) : (
+        <div className="form-grid">
+          <div className="field">
+            <label className="label" htmlFor="cd-seconds">Dauer (Sekunden)</label>
+            <input
+              id="cd-seconds"
+              className="input"
+              type="number"
+              min="1"
+              value={seconds}
+              onChange={(e) => setSeconds(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label className="label" htmlFor="cd-label">Anlass</label>
+            <input id="cd-label" className="input" value={label} onChange={(e) => setLabel(e.target.value)} />
+          </div>
+          <button type="button" className="btn btn-gold" onClick={start}>
+            Countdown starten
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PresentationPanel({ presentation }) {
+  const [embedUrl, setEmbedUrl] = useState(presentation.embedUrl || '');
+  const [uploading, setUploading] = useState(false);
+  const fileInput = useRef(null);
+
+  async function cueEmbed() {
+    await api('/api/admin/presentation', { method: 'PUT', body: { embedUrl } });
+  }
+
+  async function handleUpload(e) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      const data = new FormData();
+      files.forEach((f) => data.append('files', f));
+      await api('/api/admin/presentation/upload', { method: 'POST', body: data });
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = '';
+    }
+  }
+
+  async function control(action, extra) {
+    await api('/api/admin/presentation', { method: 'POST', body: { action, ...extra } });
+  }
+
+  return (
+    <div className="panel">
+      <p className="panel-title">Präsentation / Folien</p>
+
+      <div className="field">
+        <label className="label" htmlFor="embed-url">Einbettungslink (Google Slides, OneDrive, Canva …)</label>
+        <div className="inline-form">
+          <input
+            id="embed-url"
+            className="input"
+            value={embedUrl}
+            onChange={(e) => setEmbedUrl(e.target.value)}
+            placeholder="https://…"
+          />
+          <button type="button" className="btn btn-gold btn-sm" onClick={cueEmbed}>
+            Live schalten
+          </button>
+        </div>
+      </div>
+
+      <div className="divider" />
+
+      <div className="field">
+        <label className="label" htmlFor="slides-upload">Folien als Bilder hochladen (PNG/JPG)</label>
+        <input id="slides-upload" ref={fileInput} type="file" accept="image/*" multiple onChange={handleUpload} className="input" />
+        {uploading && <p className="small muted">Lädt hoch …</p>}
+      </div>
+
+      {presentation.slides?.length > 0 && (
+        <>
+          <div className="slide-thumbs">
+            {presentation.slides.map((url, i) => (
+              <button
+                key={url}
+                type="button"
+                className={`slide-thumb ${presentation.currentSlideIndex === i && presentation.mode === 'slides' ? 'is-active' : ''}`}
+                onClick={() => control('setIndex', { index: i })}
+              >
+                <img src={url} alt={`Folie ${i + 1}`} />
+              </button>
+            ))}
+          </div>
+          <div className="inline-form">
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => control('prev')}>◄ Zurück</button>
+            <span className="small muted">
+              {presentation.mode === 'slides' ? presentation.currentSlideIndex + 1 : '–'} / {presentation.slides.length}
+            </span>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => control('next')}>Weiter ►</button>
+            <button type="button" className="btn btn-wine btn-sm" onClick={() => control('clear')}>Folien löschen</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

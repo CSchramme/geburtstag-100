@@ -1,0 +1,11 @@
+node_modules/
+.next/
+data/store.json
+data/.spotify-tokens.json
+public/uploads/gallery/*
+public/uploads/slides/*
+!public/uploads/gallery/.gitkeep
+!public/uploads/slides/.gitkeep
+.env
+.env.local
+*.log
