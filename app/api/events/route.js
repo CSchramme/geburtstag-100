@@ -1,7 +1,6 @@
-import { get, onChange } from '@/lib/store';
-import { verifySessionToken } from '@/lib/auth';
-import { toPublicState } from '@/lib/views';
-import { SESSION_COOKIE } from '@/lib/auth';
+import { onChange } from '@/lib/store';
+import { verifySessionToken, SESSION_COOKIE } from '@/lib/auth';
+import { snapshotFor } from '@/lib/stateSnapshot';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,10 +15,8 @@ export async function GET(request) {
   const stream = new ReadableStream({
     start(controller) {
       const send = () => {
-        const state = get();
-        const payload = isAdmin ? state : toPublicState(state);
         try {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(snapshotFor(isAdmin))}\n\n`));
         } catch {
           // controller already closed
         }
