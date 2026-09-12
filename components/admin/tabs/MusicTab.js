@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import MixingConsole from './MixingConsole';
 
 const PLAYLIST_FIELDS = [
   { key: 'nebenbei', label: "Playlist „Nebenbei\"" },
@@ -63,10 +64,6 @@ export default function MusicTab({ music }) {
     await api('/api/spotify/play', { method: 'POST', body: isContext ? { contextUri: uri } : { uri } });
   }
 
-  async function pause() {
-    await api('/api/spotify/pause', { method: 'POST' });
-  }
-
   return (
     <div className="stack">
       {notice && <div className="panel notice">{notice}</div>}
@@ -93,24 +90,8 @@ export default function MusicTab({ music }) {
       {status?.connected && (
         <>
           <div className="panel">
-            <p className="panel-title">Wiedergabe</p>
-            <div className="inline-form">
-              <button type="button" className="btn btn-ghost btn-sm" onClick={pause}>⏸ Pause</button>
-            </div>
-            {devices.length > 0 ? (
-              <ul className="admin-list">
-                {devices.map((d) => (
-                  <li key={d.id} className="admin-list-row">
-                    <div className="admin-list-body">
-                      <strong>{d.name}</strong>
-                      <p>{d.type}{d.is_active ? ' · aktiv' : ''}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted small">Kein Gerät gefunden – öffne Spotify auf dem Wiedergabegerät (Lautsprecher/Laptop).</p>
-            )}
+            <p className="panel-title">Mischpult</p>
+            <MixingConsole devices={devices} onDevicesChange={refreshStatus} />
           </div>
 
           <div className="panel">
