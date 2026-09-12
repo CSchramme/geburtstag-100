@@ -10,6 +10,7 @@ import MusicTab from './tabs/MusicTab';
 import QuizTab from './tabs/QuizTab';
 import GuestbookTab from './tabs/GuestbookTab';
 import GalleryTab from './tabs/GalleryTab';
+import PhotoboxTab from './tabs/PhotoboxTab';
 
 const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efceb3f2a09d';
 
@@ -21,7 +22,8 @@ const TABS = [
   { id: 'musik', label: 'Musik' },
   { id: 'hofnarr', label: 'Hofnarr' },
   { id: 'gaestebuch', label: 'Gästebuch' },
-  { id: 'galerie', label: 'Galerie' }
+  { id: 'galerie', label: 'Galerie' },
+  { id: 'fotobox', label: 'Fotobox' }
 ];
 
 function pendingCount(list) {
@@ -90,6 +92,7 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'hofnarr' && <QuizTab quiz={state.quiz} />}
         {tab === 'gaestebuch' && <GuestbookTab guestbook={state.guestbook} />}
         {tab === 'galerie' && <GalleryTab gallery={state.gallery} />}
+        {tab === 'fotobox' && <PhotoboxTab />}
       </main>
     </div>
   );
