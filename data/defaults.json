@@ -79,8 +79,10 @@
   "gallery": [],
   "songRequests": [],
   "rsvps": [],
+  "guests": [],
   "seating": {
-    "tables": []
+    "tables": [],
+    "walls": []
   },
   "impressum": {
     "text": "Diese Seite dient ausschließlich der privaten Nutzung im Rahmen einer geschlossenen Geburtstagsfeier von Tamara & Ralph.\n\nVerantwortlich: [Name, Anschrift eintragen]\nKontakt: [E-Mail eintragen]"

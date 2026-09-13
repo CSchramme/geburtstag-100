@@ -92,7 +92,7 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'uebersicht' && <OverviewTab state={state} onNavigate={setTab} />}
         {tab === 'fest' && <PartyTab party={state.party} impressum={state.impressum} />}
         {tab === 'zusagen' && <RsvpTab rsvps={state.rsvps} />}
-        {tab === 'sitzplan' && <SeatingTab seating={state.seating} />}
+        {tab === 'sitzplan' && <SeatingTab seating={state.seating} guests={state.guests} rsvps={state.rsvps} />}
         {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} />}
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />

@@ -7,12 +7,12 @@ export async function PATCH(request, { params }) {
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
   update((state) => {
-    const table = state.seating.tables.find((t) => t.id === id);
-    if (!table) return;
-    if (typeof body.name === 'string') table.name = body.name.trim().slice(0, 60);
-    if (Number.isFinite(body.x)) table.x = Math.max(0, body.x);
-    if (Number.isFinite(body.y)) table.y = Math.max(0, body.y);
-    if (Number.isFinite(body.seats)) table.seats = Math.max(1, Math.min(30, Math.round(body.seats)));
+    const wall = state.seating.walls.find((w) => w.id === id);
+    if (!wall) return;
+    if (Number.isFinite(body.x)) wall.x = Math.max(0, body.x);
+    if (Number.isFinite(body.y)) wall.y = Math.max(0, body.y);
+    if (Number.isFinite(body.length)) wall.length = Math.max(20, Math.min(800, Math.round(body.length)));
+    if (typeof body.vertical === 'boolean') wall.vertical = body.vertical;
   });
   return NextResponse.json({ ok: true, seating: get().seating });
 }
@@ -20,7 +20,7 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
   const { id } = await params;
   update((state) => {
-    state.seating.tables = state.seating.tables.filter((t) => t.id !== id);
+    state.seating.walls = state.seating.walls.filter((w) => w.id !== id);
   });
   return NextResponse.json({ ok: true, seating: get().seating });
 }
