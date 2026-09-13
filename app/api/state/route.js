@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
-import { verifySessionToken, SESSION_COOKIE } from '@/lib/auth';
-import { snapshotFor } from '@/lib/stateSnapshot';
+import { get } from '@/lib/store';
+import { toPublicState } from '@/lib/views';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Plain JSON snapshot of the current state. Used as the initial paint (so
-// the page shows content immediately, without waiting on the SSE stream)
-// and as a polling fallback for hosting setups whose proxy buffers/blocks
-// long-lived responses like /api/events (e.g. Phusion Passenger with
-// response buffering enabled, common on shared Plesk hosting).
-export async function GET(request) {
-  const isAdmin = verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value);
-  return NextResponse.json(snapshotFor(isAdmin));
+// Always the public, moderated view - regardless of any admin cookie the
+// browser might be carrying (e.g. because /admin is open in another tab).
+// Which data a request gets must depend on which endpoint it calls, not on
+// incidental cookie state.
+export async function GET() {
+  return NextResponse.json(toPublicState(get()));
 }

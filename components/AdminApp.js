@@ -34,7 +34,7 @@ export default function AdminApp() {
 }
 
 function UnlockedAdmin({ onLogout }) {
-  const { state, connected } = useLiveState();
+  const { state, connected } = useLiveState(true);
 
   if (!state) {
     return <div className="page-loading" />;

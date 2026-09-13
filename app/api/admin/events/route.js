@@ -1,11 +1,10 @@
 import { get, onChange } from '@/lib/store';
-import { toPublicState } from '@/lib/views';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Always the public, moderated stream - see app/api/state/route.js for why
-// this must not depend on any admin cookie the browser might be carrying.
+// Protected by proxy.js (matcher: /api/admin/:path*) - full, unfiltered
+// state stream for the admin dashboard only.
 export async function GET(request) {
   const encoder = new TextEncoder();
 
@@ -16,7 +15,7 @@ export async function GET(request) {
     start(controller) {
       const send = () => {
         try {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(toPublicState(get()))}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(get())}\n\n`));
         } catch {
           // controller already closed
         }

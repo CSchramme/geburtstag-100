@@ -37,7 +37,7 @@ export default function GallerySection({ gallery }) {
   return (
     <section id="galerie" className="section">
       <div className="spread">
-        <h2 className="section-title mt-0">Die königliche Bildergalerie</h2>
+        <h2 className="section-title mt-0">Die Bildergalerie des Hofes</h2>
         <button type="button" className="btn btn-sm btn-ghost" onClick={() => setOpen((v) => !v)}>
           {open ? 'Schließen' : 'Foto einreichen'}
         </button>

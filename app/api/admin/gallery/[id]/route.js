@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
-import path from 'path';
 import { get, update } from '@/lib/store';
+import { filePathForUploadUrl } from '@/lib/uploads';
 
 export const runtime = 'nodejs';
 
@@ -25,8 +25,8 @@ export async function DELETE(request, { params }) {
     removed = state.gallery.find((g) => g.id === id);
     state.gallery = state.gallery.filter((g) => g.id !== id);
   });
-  if (removed?.url) {
-    const filePath = path.join(process.cwd(), 'public', removed.url);
+  const filePath = filePathForUploadUrl(removed?.url);
+  if (filePath) {
     fs.unlink(filePath, () => {});
   }
   return NextResponse.json({ ok: true, gallery: get().gallery });

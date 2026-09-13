@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
-import path from 'path';
 import { get, update } from '@/lib/store';
+import { filePathForUploadUrl } from '@/lib/uploads';
 
 export const runtime = 'nodejs';
 
@@ -35,8 +35,8 @@ export async function POST(request) {
       if (['none', 'embed', 'slides'].includes(body.mode)) p.mode = body.mode;
     } else if (action === 'clear') {
       for (const url of p.slides) {
-        const filePath = path.join(process.cwd(), 'public', url);
-        fs.unlink(filePath, () => {});
+        const filePath = filePathForUploadUrl(url);
+        if (filePath) fs.unlink(filePath, () => {});
       }
       p.slides = [];
       p.currentSlideIndex = 0;
