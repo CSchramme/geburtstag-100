@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { get, update, id as genId } from '@/lib/store';
+import { fireSound } from '@/lib/sound';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,7 @@ export async function POST(request) {
   update((state) => {
     state.chronicle.push(item);
     state.chronicle.sort((a, b) => a.time.localeCompare(b.time));
+    fireSound(state, 'gong');
   });
   return NextResponse.json({ ok: true, chronicle: get().chronicle });
 }

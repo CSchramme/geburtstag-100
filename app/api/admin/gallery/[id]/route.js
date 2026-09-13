@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import { get, update } from '@/lib/store';
 import { filePathForUploadUrl } from '@/lib/uploads';
+import { fireSound } from '@/lib/sound';
 
 export const runtime = 'nodejs';
 
@@ -13,7 +14,11 @@ export async function PATCH(request, { params }) {
   }
   update((state) => {
     const entry = state.gallery.find((g) => g.id === id);
-    if (entry) entry.status = body.status;
+    if (entry) {
+      const wasApproved = entry.status === 'approved';
+      entry.status = body.status;
+      if (!wasApproved && body.status === 'approved') fireSound(state, 'sparkle');
+    }
   });
   return NextResponse.json({ ok: true, gallery: get().gallery });
 }

@@ -88,7 +88,7 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />
         )}
-        {tab === 'musik' && <MusicTab music={state.music} />}
+        {tab === 'musik' && <MusicTab music={state.music} sound={state.sound} />}
         {tab === 'hofnarr' && <QuizTab quiz={state.quiz} />}
         {tab === 'gaestebuch' && <GuestbookTab guestbook={state.guestbook} />}
         {tab === 'galerie' && <GalleryTab gallery={state.gallery} />}

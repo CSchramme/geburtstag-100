@@ -50,6 +50,19 @@
   "display": {
     "scene": "idle"
   },
+  "sound": {
+    "volumes": {
+      "gong": 70,
+      "chime": 70,
+      "sparkle": 70,
+      "horn": 70,
+      "fanfare": 70,
+      "drumroll": 70,
+      "applause": 70,
+      "bell_toll": 70
+    },
+    "trigger": { "key": "", "nonce": "", "at": 0 }
+  },
   "guestbook": [],
   "gallery": [],
   "impressum": {

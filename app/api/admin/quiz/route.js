@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { get, update, id as genId } from '@/lib/store';
+import { fireSound } from '@/lib/sound';
 
 export const runtime = 'nodejs';
 
@@ -53,7 +54,9 @@ export async function POST(request) {
       case 'reveal': {
         const active = round?.candidates[quiz.activeCandidateIndex];
         const max = active ? active.clues.length : 0;
-        quiz.revealedClueCount = Math.min(max, quiz.revealedClueCount + 1);
+        const next = Math.min(max, quiz.revealedClueCount + 1);
+        if (next > quiz.revealedClueCount) fireSound(state, 'horn');
+        quiz.revealedClueCount = next;
         break;
       }
       case 'unreveal': {
@@ -61,6 +64,7 @@ export async function POST(request) {
         break;
       }
       case 'revealAnswer': {
+        if (!quiz.answerRevealed) fireSound(state, 'fanfare');
         quiz.answerRevealed = true;
         break;
       }

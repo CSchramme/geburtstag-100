@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { get, update } from '@/lib/store';
+import { fireSound } from '@/lib/sound';
 
 export const runtime = 'nodejs';
 
@@ -11,7 +12,11 @@ export async function PATCH(request, { params }) {
   }
   update((state) => {
     const entry = state.guestbook.find((g) => g.id === id);
-    if (entry) entry.status = body.status;
+    if (entry) {
+      const wasApproved = entry.status === 'approved';
+      entry.status = body.status;
+      if (!wasApproved && body.status === 'approved') fireSound(state, 'chime');
+    }
   });
   return NextResponse.json({ ok: true, guestbook: get().guestbook });
 }

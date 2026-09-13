@@ -10,6 +10,7 @@ import QuizScene from '@/components/display/QuizScene';
 import PresentationScene from '@/components/display/PresentationScene';
 import GalleryScene from '@/components/display/GalleryScene';
 import GuestbookScene from '@/components/display/GuestbookScene';
+import SoundEffectsListener from '@/components/display/SoundEffectsListener';
 
 export default function DisplayApp() {
   const { state } = useLiveState();
@@ -22,10 +23,11 @@ export default function DisplayApp() {
 
   return (
     <div className="display-root">
+      <SoundEffectsListener sound={state.sound} />
       <div className="display-body">
         {scene === 'idle' && <IdleScene party={state.party} />}
         {scene === 'chronicle' && <ChronicleScene chronicle={state.chronicle} />}
-        {scene === 'countdown' && <CountdownScene countdown={state.countdown} />}
+        {scene === 'countdown' && <CountdownScene countdown={state.countdown} sound={state.sound} />}
         {scene === 'quiz' && <QuizScene quiz={state.quiz} />}
         {scene === 'presentation' && <PresentationScene presentation={state.presentation} />}
         {scene === 'gallery' && <GalleryScene gallery={state.gallery} />}

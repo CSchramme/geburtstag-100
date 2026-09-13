@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import MixingConsole from './MixingConsole';
+import SoundboardPanel from './SoundboardPanel';
 
 const PLAYLIST_FIELDS = [
   { key: 'nebenbei', label: "Playlist „Nebenbei\"" },
@@ -10,7 +11,7 @@ const PLAYLIST_FIELDS = [
   { key: 'party', label: "Playlist „Party\"" }
 ];
 
-export default function MusicTab({ music }) {
+export default function MusicTab({ music, sound }) {
   const [status, setStatus] = useState(null);
   const [devices, setDevices] = useState([]);
   const [notice, setNotice] = useState('');
@@ -117,6 +118,8 @@ export default function MusicTab({ music }) {
           </div>
         </>
       )}
+
+      <SoundboardPanel sound={sound} />
 
       <PlaylistForm music={music} />
     </div>
