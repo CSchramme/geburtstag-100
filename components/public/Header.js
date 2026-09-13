@@ -2,6 +2,8 @@ import Crest from '@/components/Crest';
 import NowPlaying from '@/components/NowPlaying';
 
 const NAV = [
+  { href: '#zusage', label: 'Zusage' },
+  { href: '#sitzplatz', label: 'Sitzplatz' },
   { href: '#chronik', label: 'Chronik' },
   { href: '#raetsel', label: 'Rätsel' },
   { href: '#wunschlied', label: 'Wunschlied' },

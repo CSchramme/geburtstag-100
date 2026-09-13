@@ -8,8 +8,17 @@ export default function OverviewTab({ state, onNavigate }) {
   const pendingGuestbook = state.guestbook.filter((g) => g.status === 'pending').length;
   const pendingGallery = state.gallery.filter((g) => g.status === 'pending').length;
   const pendingSongs = state.songRequests.filter((r) => r.status === 'pending').length;
+  const confirmedGuests = state.rsvps
+    .filter((r) => r.attending === 'yes')
+    .reduce((sum, r) => sum + (r.guestCount || 1), 0);
 
   const cards = [
+    {
+      title: 'Zusagen',
+      value: `${confirmedGuests} Person${confirmedGuests === 1 ? '' : 'en'}`,
+      action: 'zusagen',
+      cta: 'Rückmeldungen ansehen'
+    },
     {
       title: 'Aktuelle Bühnen-Szene',
       value: SCENE_LABELS[state.display.scene] || state.display.scene,

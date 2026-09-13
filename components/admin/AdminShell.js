@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Crest from '@/components/Crest';
 import OverviewTab from './tabs/OverviewTab';
 import PartyTab from './tabs/PartyTab';
+import RsvpTab from './tabs/RsvpTab';
+import SeatingTab from './tabs/SeatingTab';
 import ChronicleTab from './tabs/ChronicleTab';
 import StageTab from './tabs/StageTab';
 import MasterTab from './tabs/MasterTab';
@@ -18,6 +20,8 @@ const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efce
 const TABS = [
   { id: 'uebersicht', label: 'Übersicht' },
   { id: 'fest', label: 'Fest' },
+  { id: 'zusagen', label: 'Zusagen' },
+  { id: 'sitzplan', label: 'Sitzplan' },
   { id: 'chronik', label: 'Chronik' },
   { id: 'buehne', label: 'Bühne' },
   { id: 'master', label: 'Master' },
@@ -87,6 +91,8 @@ export default function AdminShell({ state, connected, onLogout }) {
       <main className="admin-content">
         {tab === 'uebersicht' && <OverviewTab state={state} onNavigate={setTab} />}
         {tab === 'fest' && <PartyTab party={state.party} impressum={state.impressum} />}
+        {tab === 'zusagen' && <RsvpTab rsvps={state.rsvps} />}
+        {tab === 'sitzplan' && <SeatingTab seating={state.seating} />}
         {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} />}
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />
