@@ -22,6 +22,7 @@ export async function POST(request) {
       name,
       caption,
       status: 'pending',
+      likes: 0,
       createdAt: new Date().toISOString()
     };
 

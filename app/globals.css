@@ -775,11 +775,40 @@ img {
   gap: 12px;
 }
 .gallery-item {
+  position: relative;
   margin: 0;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid rgba(212, 175, 55, 0.25);
   background: rgba(0, 0, 0, 0.2);
+}
+.gallery-like-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(5, 3, 1, 0.65);
+  backdrop-filter: blur(2px);
+  color: var(--parchment);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.gallery-like-btn span:first-child {
+  font-size: 14px;
+  color: var(--wine-bright);
+}
+.gallery-like-btn.is-liked {
+  border-color: var(--gold);
+  cursor: default;
+}
+.gallery-like-btn.is-liked span:first-child {
+  color: var(--gold-bright);
 }
 .gallery-item img {
   width: 100%;
@@ -1635,4 +1664,81 @@ img {
   color: var(--gold-bright);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* ---------- scene crossfade (display) ---------- */
+
+.scene-transition {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.scene-layer {
+  position: absolute;
+  inset: 0;
+}
+.scene-layer-out {
+  animation: sceneFadeOut 0.7s ease forwards;
+}
+.scene-layer-in {
+  animation: sceneFadeIn 0.7s ease forwards;
+}
+@keyframes sceneFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes sceneFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-layer-out,
+  .scene-layer-in {
+    animation: none;
+  }
+}
+
+/* ---------- rotation "not included" marker (admin) ---------- */
+
+.scene-no-rotate-mark {
+  margin-left: 6px;
+  opacity: 0.55;
+  font-size: 10px;
+}
+
+/* ---------- QR code panel ---------- */
+
+.qr-panel-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.qr-canvas {
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  flex: none;
+}
+.qr-url {
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+  word-break: break-all;
+}
+
+/* ---------- song requests "done" collapsible ---------- */
+
+.song-requests-done {
+  margin-top: 14px;
+}
+.song-requests-done summary {
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 6px 0;
+}
+.song-requests-done .admin-list {
+  margin-top: 10px;
 }

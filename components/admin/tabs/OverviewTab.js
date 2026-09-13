@@ -1,18 +1,13 @@
-const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efceb3f2a09d';
+import { SCENE_LABELS } from '@/lib/displayScenes';
+import QrCodePanel from './QrCodePanel';
+import ExportPanel from './ExportPanel';
 
-const SCENE_LABELS = {
-  idle: 'Wappen (Ruhebild)',
-  chronicle: 'Chronik',
-  countdown: 'Countdown',
-  quiz: 'Hofnarr-Rätsel',
-  presentation: 'Präsentation',
-  gallery: 'Galerie',
-  guestbook: 'Gästebuch'
-};
+const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efceb3f2a09d';
 
 export default function OverviewTab({ state, onNavigate }) {
   const pendingGuestbook = state.guestbook.filter((g) => g.status === 'pending').length;
   const pendingGallery = state.gallery.filter((g) => g.status === 'pending').length;
+  const pendingSongs = state.songRequests.filter((r) => r.status === 'pending').length;
 
   const cards = [
     {
@@ -38,6 +33,12 @@ export default function OverviewTab({ state, onNavigate }) {
       value: String(pendingGallery),
       action: 'galerie',
       cta: 'Prüfen'
+    },
+    {
+      title: 'Offene Musikwünsche',
+      value: String(pendingSongs),
+      action: 'musik',
+      cta: 'Ansehen'
     }
   ];
 
@@ -65,6 +66,9 @@ export default function OverviewTab({ state, onNavigate }) {
           </div>
         ))}
       </div>
+
+      <QrCodePanel />
+      <ExportPanel />
     </div>
   );
 }

@@ -3,21 +3,13 @@
 import { useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import CountdownClock from '@/components/CountdownClock';
-
-const SCENES = [
-  { id: 'idle', label: 'Wappen' },
-  { id: 'chronicle', label: 'Chronik' },
-  { id: 'countdown', label: 'Countdown' },
-  { id: 'quiz', label: 'Hofnarr' },
-  { id: 'presentation', label: 'Präsentation' },
-  { id: 'gallery', label: 'Galerie' },
-  { id: 'guestbook', label: 'Gästebuch' }
-];
+import { SCENES } from '@/lib/displayScenes';
 
 export default function StageTab({ display, ticker, countdown, presentation }) {
   return (
     <div className="stack">
       <SceneSwitcher active={display.scene} />
+      <RotationPanel autoRotate={display.autoRotate} />
       <TickerPanel ticker={ticker} />
       <CountdownPanel countdown={countdown} />
       <PresentationPanel presentation={presentation} />
@@ -42,9 +34,69 @@ function SceneSwitcher({ active }) {
             onClick={() => setScene(s.id)}
           >
             {s.label}
+            {!s.rotatable && <span className="scene-no-rotate-mark" title="Nimmt nicht an der Automatik teil">•</span>}
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function RotationPanel({ autoRotate }) {
+  const [interval, setInterval_] = useState(autoRotate.intervalSeconds || 20);
+
+  async function setEnabled(enabled) {
+    await api('/api/admin/display/rotation', { method: 'PUT', body: { enabled } });
+  }
+  async function setPaused(paused) {
+    await api('/api/admin/display/rotation', { method: 'PUT', body: { paused } });
+  }
+  async function commitInterval(value) {
+    await api('/api/admin/display/rotation', { method: 'PUT', body: { intervalSeconds: value } });
+  }
+
+  return (
+    <div className="panel">
+      <div className="spread">
+        <p className="panel-title mt-0">Automatik-Durchlauf</p>
+        <button
+          type="button"
+          className={`seal-toggle ${autoRotate.enabled ? 'is-on' : ''}`}
+          onClick={() => setEnabled(!autoRotate.enabled)}
+          aria-pressed={autoRotate.enabled}
+          aria-label="Automatik ein-/ausschalten"
+        />
+      </div>
+      <p className="small muted mt-0">
+        Wechselt selbstständig zwischen Wappen, Chronik, Galerie und Gästebuch. Countdown, Hofnarr und
+        Präsentation bleiben außen vor und werden nur manuell gezeigt.
+      </p>
+      {autoRotate.enabled && (
+        <div className="inline-form">
+          <div className="field" style={{ maxWidth: 140 }}>
+            <label className="label" htmlFor="rotate-interval">Sekunden je Szene</label>
+            <input
+              id="rotate-interval"
+              className="input"
+              type="number"
+              min="5"
+              max="300"
+              value={interval}
+              onChange={(e) => setInterval_(e.target.value)}
+              onBlur={(e) => commitInterval(Number(e.target.value))}
+            />
+          </div>
+          {autoRotate.paused ? (
+            <button type="button" className="btn btn-gold btn-sm" onClick={() => setPaused(false)}>
+              ► Fortsetzen
+            </button>
+          ) : (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPaused(true)}>
+              ❚❚ Pausieren
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

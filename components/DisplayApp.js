@@ -11,6 +11,7 @@ import PresentationScene from '@/components/display/PresentationScene';
 import GalleryScene from '@/components/display/GalleryScene';
 import GuestbookScene from '@/components/display/GuestbookScene';
 import SoundEffectsListener from '@/components/display/SoundEffectsListener';
+import SceneTransition from '@/components/display/SceneTransition';
 
 export default function DisplayApp() {
   const { state } = useLiveState();
@@ -21,17 +22,20 @@ export default function DisplayApp() {
 
   const scene = state.display.scene;
 
+  let sceneNode = null;
+  if (scene === 'idle') sceneNode = <IdleScene party={state.party} />;
+  else if (scene === 'chronicle') sceneNode = <ChronicleScene chronicle={state.chronicle} />;
+  else if (scene === 'countdown') sceneNode = <CountdownScene countdown={state.countdown} sound={state.sound} />;
+  else if (scene === 'quiz') sceneNode = <QuizScene quiz={state.quiz} />;
+  else if (scene === 'presentation') sceneNode = <PresentationScene presentation={state.presentation} />;
+  else if (scene === 'gallery') sceneNode = <GalleryScene gallery={state.gallery} />;
+  else if (scene === 'guestbook') sceneNode = <GuestbookScene guestbook={state.guestbook} />;
+
   return (
     <div className="display-root">
       <SoundEffectsListener sound={state.sound} />
       <div className="display-body">
-        {scene === 'idle' && <IdleScene party={state.party} />}
-        {scene === 'chronicle' && <ChronicleScene chronicle={state.chronicle} />}
-        {scene === 'countdown' && <CountdownScene countdown={state.countdown} sound={state.sound} />}
-        {scene === 'quiz' && <QuizScene quiz={state.quiz} />}
-        {scene === 'presentation' && <PresentationScene presentation={state.presentation} />}
-        {scene === 'gallery' && <GalleryScene gallery={state.gallery} />}
-        {scene === 'guestbook' && <GuestbookScene guestbook={state.guestbook} />}
+        <SceneTransition sceneKey={scene}>{sceneNode}</SceneTransition>
       </div>
 
       <div className="display-footer">

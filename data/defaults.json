@@ -48,7 +48,13 @@
     "currentSlideIndex": 0
   },
   "display": {
-    "scene": "idle"
+    "scene": "idle",
+    "autoRotate": {
+      "enabled": false,
+      "paused": false,
+      "intervalSeconds": 20,
+      "lastRotateAt": 0
+    }
   },
   "sound": {
     "volumes": {
@@ -59,12 +65,19 @@
       "fanfare": 70,
       "drumroll": 70,
       "applause": 70,
-      "bell_toll": 70
+      "bell_toll": 70,
+      "whoosh": 55,
+      "riser": 70,
+      "success_ding": 70,
+      "party_horn": 70,
+      "heartbeat": 70,
+      "crown_fanfare": 70
     },
     "trigger": { "key": "", "nonce": "", "at": 0 }
   },
   "guestbook": [],
   "gallery": [],
+  "songRequests": [],
   "impressum": {
     "text": "Diese Seite dient ausschließlich der privaten Nutzung im Rahmen einer geschlossenen Geburtstagsfeier von Tamara & Ralph.\n\nVerantwortlich: [Name, Anschrift eintragen]\nKontakt: [E-Mail eintragen]"
   }

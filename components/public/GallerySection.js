@@ -1,6 +1,56 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const LIKED_STORAGE_KEY = 'hoffest-liked-photos';
+
+function readLikedIds() {
+  try {
+    return new Set(JSON.parse(window.localStorage.getItem(LIKED_STORAGE_KEY) || '[]'));
+  } catch {
+    return new Set();
+  }
+}
+
+function LikeButton({ photoId, likes }) {
+  const [liked, setLiked] = useState(false);
+  const [count, setCount] = useState(likes || 0);
+
+  useEffect(() => {
+    setLiked(readLikedIds().has(photoId));
+  }, [photoId]);
+
+  useEffect(() => {
+    setCount(likes || 0);
+  }, [likes]);
+
+  async function toggleLike() {
+    if (liked) return;
+    setLiked(true);
+    setCount((c) => c + 1);
+    try {
+      const ids = readLikedIds();
+      ids.add(photoId);
+      window.localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify([...ids]));
+    } catch {
+      // localStorage unavailable - like still counts server-side this session
+    }
+    try {
+      const res = await fetch(`/api/public/gallery/${photoId}/like`, { method: 'POST' });
+      const json = await res.json();
+      if (res.ok && typeof json.likes === 'number') setCount(json.likes);
+    } catch {
+      // keep optimistic count
+    }
+  }
+
+  return (
+    <button type="button" className={`gallery-like-btn ${liked ? 'is-liked' : ''}`} onClick={toggleLike} disabled={liked}>
+      <span aria-hidden="true">{liked ? '♥' : '♡'}</span>
+      <span>{count}</span>
+    </button>
+  );
+}
 
 export default function GallerySection({ gallery }) {
   const [open, setOpen] = useState(false);
@@ -77,6 +127,7 @@ export default function GallerySection({ gallery }) {
           {gallery.map((photo) => (
             <figure key={photo.id} className="gallery-item">
               <img src={photo.url} alt={photo.caption || 'Foto vom Hoffest'} loading="lazy" />
+              <LikeButton photoId={photo.id} likes={photo.likes} />
               {(photo.caption || photo.name) && (
                 <figcaption>
                   {photo.caption}

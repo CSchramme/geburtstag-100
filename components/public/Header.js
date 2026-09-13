@@ -4,6 +4,7 @@ import NowPlaying from '@/components/NowPlaying';
 const NAV = [
   { href: '#chronik', label: 'Chronik' },
   { href: '#raetsel', label: 'Rätsel' },
+  { href: '#wunschlied', label: 'Wunschlied' },
   { href: '#galerie', label: 'Galerie' },
   { href: '#gaestebuch', label: 'Gästebuch' }
 ];

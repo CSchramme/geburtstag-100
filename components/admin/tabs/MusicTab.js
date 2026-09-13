@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import MixingConsole from './MixingConsole';
-import SoundboardPanel from './SoundboardPanel';
+import SongRequestsPanel from './SongRequestsPanel';
 
 const PLAYLIST_FIELDS = [
   { key: 'nebenbei', label: "Playlist „Nebenbei\"" },
@@ -11,9 +10,8 @@ const PLAYLIST_FIELDS = [
   { key: 'party', label: "Playlist „Party\"" }
 ];
 
-export default function MusicTab({ music, sound }) {
+export default function MusicTab({ music, songRequests }) {
   const [status, setStatus] = useState(null);
-  const [devices, setDevices] = useState([]);
   const [notice, setNotice] = useState('');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
@@ -38,10 +36,6 @@ export default function MusicTab({ music, sound }) {
   async function refreshStatus() {
     const s = await fetch('/api/spotify/status').then((r) => r.json());
     setStatus(s);
-    if (s.connected) {
-      const d = await fetch('/api/spotify/devices').then((r) => r.json());
-      setDevices(d.devices || []);
-    }
   }
 
   async function disconnect() {
@@ -49,16 +43,23 @@ export default function MusicTab({ music, sound }) {
     refreshStatus();
   }
 
-  async function runSearch(e) {
-    e.preventDefault();
-    if (!query.trim()) return;
+  async function runSearch(e, presetQuery) {
+    if (e) e.preventDefault();
+    const q = presetQuery ?? query;
+    if (!q.trim()) return;
     setSearching(true);
     try {
-      const json = await fetch(`/api/spotify/search?q=${encodeURIComponent(query)}`).then((r) => r.json());
+      const json = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}`).then((r) => r.json());
       setResults(json);
     } finally {
       setSearching(false);
     }
+  }
+
+  function searchFromRequest(text) {
+    setQuery(text);
+    runSearch(null, text);
+    document.getElementById('music-search-input')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   async function play(uri, isContext) {
@@ -86,40 +87,44 @@ export default function MusicTab({ music, sound }) {
         ) : (
           <a className="btn btn-gold" href="/api/spotify/login">Mit Spotify verbinden</a>
         )}
+        {status?.connected && (
+          <p className="small muted" style={{ marginTop: 10 }}>
+            Mischpult und Soundeffekte findest du jetzt im Tab <strong>Master</strong>.
+          </p>
+        )}
       </div>
 
+      <SongRequestsPanel requests={songRequests} onSearch={searchFromRequest} />
+
       {status?.connected && (
-        <>
-          <div className="panel">
-            <p className="panel-title">Mischpult</p>
-            <MixingConsole devices={devices} onDevicesChange={refreshStatus} />
-          </div>
-
-          <div className="panel">
-            <p className="panel-title">Song oder Playlist suchen</p>
-            <form className="inline-form" onSubmit={runSearch}>
-              <input className="input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Titel, Künstler oder Playlist …" />
-              <button type="submit" className="btn btn-gold btn-sm" disabled={searching}>Suchen</button>
-            </form>
-            {results && (
-              <div className="search-results">
-                {[...(results.playlists || []), ...(results.tracks || [])].map((r) => (
-                  <button key={r.uri} type="button" className="search-result" onClick={() => play(r.uri, r.owner !== undefined)}>
-                    {r.image && <img src={r.image} alt="" />}
-                    <span>
-                      <strong>{r.name}</strong>
-                      <br />
-                      <span className="muted small">{r.artists || r.owner || ''}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
+        <div className="panel">
+          <p className="panel-title">Song oder Playlist suchen</p>
+          <form className="inline-form" onSubmit={runSearch}>
+            <input
+              id="music-search-input"
+              className="input"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Titel, Künstler oder Playlist …"
+            />
+            <button type="submit" className="btn btn-gold btn-sm" disabled={searching}>Suchen</button>
+          </form>
+          {results && (
+            <div className="search-results">
+              {[...(results.playlists || []), ...(results.tracks || [])].map((r) => (
+                <button key={r.uri} type="button" className="search-result" onClick={() => play(r.uri, r.owner !== undefined)}>
+                  {r.image && <img src={r.image} alt="" />}
+                  <span>
+                    <strong>{r.name}</strong>
+                    <br />
+                    <span className="muted small">{r.artists || r.owner || ''}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )}
-
-      <SoundboardPanel sound={sound} />
 
       <PlaylistForm music={music} />
     </div>

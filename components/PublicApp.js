@@ -8,6 +8,7 @@ import Chronicle from '@/components/public/Chronicle';
 import QuizTeaser from '@/components/public/QuizTeaser';
 import GallerySection from '@/components/public/GallerySection';
 import GuestbookSection from '@/components/public/GuestbookSection';
+import SongRequestSection from '@/components/public/SongRequestSection';
 import Footer from '@/components/public/Footer';
 
 export default function PublicApp() {
@@ -30,6 +31,7 @@ export default function PublicApp() {
         <Hero party={state.party} countdown={state.countdown} />
         <Chronicle chronicle={state.chronicle} />
         <QuizTeaser quiz={state.quiz} />
+        <SongRequestSection />
         <GallerySection gallery={state.gallery} />
         <GuestbookSection guestbook={state.guestbook} />
       </main>

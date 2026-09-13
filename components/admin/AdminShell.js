@@ -6,6 +6,7 @@ import OverviewTab from './tabs/OverviewTab';
 import PartyTab from './tabs/PartyTab';
 import ChronicleTab from './tabs/ChronicleTab';
 import StageTab from './tabs/StageTab';
+import MasterTab from './tabs/MasterTab';
 import MusicTab from './tabs/MusicTab';
 import QuizTab from './tabs/QuizTab';
 import GuestbookTab from './tabs/GuestbookTab';
@@ -19,6 +20,7 @@ const TABS = [
   { id: 'fest', label: 'Fest' },
   { id: 'chronik', label: 'Chronik' },
   { id: 'buehne', label: 'Bühne' },
+  { id: 'master', label: 'Master' },
   { id: 'musik', label: 'Musik' },
   { id: 'hofnarr', label: 'Hofnarr' },
   { id: 'gaestebuch', label: 'Gästebuch' },
@@ -40,7 +42,8 @@ export default function AdminShell({ state, connected, onLogout }) {
 
   const badges = {
     gaestebuch: pendingCount(state.guestbook),
-    galerie: pendingCount(state.gallery)
+    galerie: pendingCount(state.gallery),
+    musik: state.songRequests.filter((r) => r.status === 'pending').length
   };
 
   return (
@@ -88,7 +91,8 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />
         )}
-        {tab === 'musik' && <MusicTab music={state.music} sound={state.sound} />}
+        {tab === 'master' && <MasterTab sound={state.sound} />}
+        {tab === 'musik' && <MusicTab music={state.music} songRequests={state.songRequests} />}
         {tab === 'hofnarr' && <QuizTab quiz={state.quiz} />}
         {tab === 'gaestebuch' && <GuestbookTab guestbook={state.guestbook} />}
         {tab === 'galerie' && <GalleryTab gallery={state.gallery} />}
