@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MixingConsole from './MixingConsole';
+import SpotifySearchPanel from './SpotifySearchPanel';
+import SongRequestsPanel from './SongRequestsPanel';
 import SoundboardPanel from './SoundboardPanel';
 
-// The live-performance console: music transport + volume on one side,
-// sound effects on the other - everything the host needs during the
-// evening itself, separate from the one-time Spotify setup in "Musik".
-export default function MasterTab({ sound }) {
+// The live-performance console: transport/volume, search, song requests
+// and sound effects all in one place - everything the host needs during
+// the evening itself, separate from the one-time Spotify setup in "Musik".
+export default function MasterTab({ sound, songRequests }) {
   const [connected, setConnected] = useState(null);
   const [devices, setDevices] = useState([]);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     refresh();
@@ -38,6 +41,10 @@ export default function MasterTab({ sound }) {
           <p className="muted">Noch nicht mit Spotify verbunden — das geht im Tab „Musik".</p>
         )}
       </div>
+
+      {connected && <SpotifySearchPanel ref={searchRef} />}
+
+      <SongRequestsPanel requests={songRequests} onSearch={(text) => searchRef.current?.searchFor(text)} />
 
       <SoundboardPanel sound={sound} />
     </div>

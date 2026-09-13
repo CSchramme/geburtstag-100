@@ -43,7 +43,7 @@ export default function AdminShell({ state, connected, onLogout }) {
   const badges = {
     gaestebuch: pendingCount(state.guestbook),
     galerie: pendingCount(state.gallery),
-    musik: state.songRequests.filter((r) => r.status === 'pending').length
+    master: state.songRequests.filter((r) => r.status === 'pending').length
   };
 
   return (
@@ -91,8 +91,8 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />
         )}
-        {tab === 'master' && <MasterTab sound={state.sound} />}
-        {tab === 'musik' && <MusicTab music={state.music} songRequests={state.songRequests} />}
+        {tab === 'master' && <MasterTab sound={state.sound} songRequests={state.songRequests} />}
+        {tab === 'musik' && <MusicTab music={state.music} />}
         {tab === 'hofnarr' && <QuizTab quiz={state.quiz} />}
         {tab === 'gaestebuch' && <GuestbookTab guestbook={state.guestbook} />}
         {tab === 'galerie' && <GalleryTab gallery={state.gallery} />}

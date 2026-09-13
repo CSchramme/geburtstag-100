@@ -37,7 +37,7 @@ export default function OverviewTab({ state, onNavigate }) {
     {
       title: 'Offene Musikwünsche',
       value: String(pendingSongs),
-      action: 'musik',
+      action: 'master',
       cta: 'Ansehen'
     }
   ];

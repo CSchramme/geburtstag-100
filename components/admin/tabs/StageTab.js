@@ -68,8 +68,9 @@ function RotationPanel({ autoRotate }) {
         />
       </div>
       <p className="small muted mt-0">
-        Wechselt selbstständig zwischen Wappen, Chronik, Galerie und Gästebuch. Countdown, Hofnarr und
-        Präsentation bleiben außen vor und werden nur manuell gezeigt.
+        Wechselt selbstständig zwischen Wappen, Chronik, Galerie und Gästebuch — Galerie und Gästebuch werden
+        übersprungen, solange dort nichts freigegeben ist. Countdown, Hofnarr und Präsentation bleiben außen vor
+        und werden nur manuell gezeigt.
       </p>
       {autoRotate.enabled && (
         <div className="inline-form">
