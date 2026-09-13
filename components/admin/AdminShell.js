@@ -16,7 +16,7 @@ const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efce
 
 const TABS = [
   { id: 'uebersicht', label: 'Übersicht' },
-  { id: 'fest', label: 'Fest & Ablauf' },
+  { id: 'fest', label: 'Fest' },
   { id: 'chronik', label: 'Chronik' },
   { id: 'buehne', label: 'Bühne' },
   { id: 'musik', label: 'Musik' },
@@ -83,7 +83,7 @@ export default function AdminShell({ state, connected, onLogout }) {
 
       <main className="admin-content">
         {tab === 'uebersicht' && <OverviewTab state={state} onNavigate={setTab} />}
-        {tab === 'fest' && <PartyTab party={state.party} agenda={state.agenda} impressum={state.impressum} />}
+        {tab === 'fest' && <PartyTab party={state.party} impressum={state.impressum} />}
         {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} />}
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />

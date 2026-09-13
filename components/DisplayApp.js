@@ -4,7 +4,6 @@ import { useLiveState } from '@/lib/useLiveState';
 import Ticker from '@/components/public/Ticker';
 import NowPlaying from '@/components/NowPlaying';
 import IdleScene from '@/components/display/IdleScene';
-import AgendaScene from '@/components/display/AgendaScene';
 import ChronicleScene from '@/components/display/ChronicleScene';
 import CountdownScene from '@/components/display/CountdownScene';
 import QuizScene from '@/components/display/QuizScene';
@@ -25,7 +24,6 @@ export default function DisplayApp() {
     <div className="display-root">
       <div className="display-body">
         {scene === 'idle' && <IdleScene party={state.party} />}
-        {scene === 'agenda' && <AgendaScene agenda={state.agenda} />}
         {scene === 'chronicle' && <ChronicleScene chronicle={state.chronicle} />}
         {scene === 'countdown' && <CountdownScene countdown={state.countdown} />}
         {scene === 'quiz' && <QuizScene quiz={state.quiz} />}

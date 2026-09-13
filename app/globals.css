@@ -1007,28 +1007,6 @@ img {
   background: rgba(212, 175, 55, 0.12);
 }
 
-.agenda-add-form {
-  display: grid;
-  grid-template-columns: 110px 1fr 1fr auto;
-  gap: 8px;
-  margin-top: 14px;
-  align-items: center;
-}
-.agenda-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-.agenda-time-input { min-width: 0; }
-
-@media (max-width: 640px) {
-  .agenda-add-form,
-  .agenda-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .admin-list {
   list-style: none;
   margin: 0;

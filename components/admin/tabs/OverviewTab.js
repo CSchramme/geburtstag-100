@@ -2,7 +2,6 @@ const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efce
 
 const SCENE_LABELS = {
   idle: 'Wappen (Ruhebild)',
-  agenda: 'Ablauf',
   chronicle: 'Chronik',
   countdown: 'Countdown',
   quiz: 'Hofnarr-Rätsel',

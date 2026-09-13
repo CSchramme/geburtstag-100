@@ -6,7 +6,6 @@ import CountdownClock from '@/components/CountdownClock';
 
 const SCENES = [
   { id: 'idle', label: 'Wappen' },
-  { id: 'agenda', label: 'Ablauf' },
   { id: 'chronicle', label: 'Chronik' },
   { id: 'countdown', label: 'Countdown' },
   { id: 'quiz', label: 'Hofnarr' },

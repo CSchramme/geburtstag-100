@@ -3,7 +3,7 @@ import { get, update } from '@/lib/store';
 
 export const runtime = 'nodejs';
 
-const SCENES = ['idle', 'agenda', 'chronicle', 'countdown', 'quiz', 'presentation', 'gallery', 'guestbook'];
+const SCENES = ['idle', 'chronicle', 'countdown', 'quiz', 'presentation', 'gallery', 'guestbook'];
 
 export async function PUT(request) {
   const body = await request.json().catch(() => ({}));
