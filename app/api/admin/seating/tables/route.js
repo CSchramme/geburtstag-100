@@ -11,10 +11,10 @@ export async function POST(request) {
     state.seating.tables.push({
       id: genId(),
       name,
-      x: 40 + (count % 5) * 140,
-      y: 40 + Math.floor(count / 5) * 140,
-      seats: 8,
-      guestRefs: []
+      x: 40 + (count % 4) * 200,
+      y: 40 + Math.floor(count / 4) * 160,
+      seats: 6,
+      seatRefs: Array(6).fill(null)
     });
   });
   return NextResponse.json({ ok: true, seating: get().seating });

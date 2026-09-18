@@ -21,7 +21,9 @@ export async function DELETE(request, { params }) {
   update((state) => {
     state.guests = state.guests.filter((g) => g.id !== id);
     state.seating.tables.forEach((t) => {
-      t.guestRefs = (t.guestRefs || []).filter((r) => r !== ref);
+      (t.seatRefs || []).forEach((r, i) => {
+        if (r === ref) t.seatRefs[i] = null;
+      });
     });
   });
   return NextResponse.json({ ok: true, guests: get().guests, seating: get().seating });
