@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 
 const PAGE_W = 595.28;
 const PAGE_H = 841.89;
-const CARD_H = PAGE_H / 2;
+const HALF_H = PAGE_H / 2;
 
 const CREST_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
   <defs>
@@ -27,9 +27,8 @@ const CREST_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140"
   <text x="60" y="94" text-anchor="middle" font-family="Helvetica, sans-serif" font-weight="700" font-size="40" fill="url(#g)">T&amp;R</text>
 </svg>`;
 
-// One card per table (not per person) - lists everyone seated there, since
-// the card is meant to stand at the table itself, not at an individual
-// place setting.
+// One page per table, printed only in the bottom half - the blank top half
+// folds back behind it so the card stands up on its own at the table.
 export async function GET() {
   const state = get();
 
@@ -55,14 +54,11 @@ export async function GET() {
       .text('Noch keine Gäste an Tischen zugeordnet.', 40, PAGE_H / 2 - 10, { width: PAGE_W - 80, align: 'center' });
   }
 
-  for (let i = 0; i < cards.length; i += 2) {
+  cards.forEach((card, i) => {
     if (i > 0) doc.addPage({ size: 'A4', margin: 0 });
-    drawCard(doc, cards[i], state.party, logoBuffer, 0);
-    if (cards[i + 1]) {
-      drawCutGuide(doc);
-      drawCard(doc, cards[i + 1], state.party, logoBuffer, CARD_H);
-    }
-  }
+    drawFoldGuide(doc);
+    drawCard(doc, card, state.party, logoBuffer);
+  });
 
   doc.end();
 
@@ -74,21 +70,23 @@ export async function GET() {
   });
 }
 
-function drawCutGuide(doc) {
+function drawFoldGuide(doc) {
   doc.save();
-  doc.dash(4, { space: 3 }).moveTo(0, CARD_H).lineTo(PAGE_W, CARD_H).lineWidth(0.75).stroke('#999999');
+  doc.dash(4, { space: 3 }).moveTo(0, HALF_H).lineTo(PAGE_W, HALF_H).lineWidth(0.75).stroke('#999999');
   doc.undash();
+  doc.fontSize(8).font('Helvetica').fillColor('#999999')
+    .text('· · ·  hier falten und aufstellen  · · ·', 0, HALF_H - 11, { width: PAGE_W, align: 'center' });
   doc.restore();
 }
 
-function drawCard(doc, card, party, logoBuffer, yOffset) {
+function drawCard(doc, card, party, logoBuffer) {
   const margin = 26;
-  const top = yOffset + margin;
+  const top = HALF_H + margin;
   const width = PAGE_W - margin * 2;
 
   doc.save();
-  doc.rect(margin, top, width, CARD_H - margin * 2).lineWidth(1.5).stroke('#8a6a1f');
-  doc.rect(margin + 6, top + 6, width - 12, CARD_H - margin * 2 - 12).lineWidth(0.75).stroke('#8a6a1f');
+  doc.rect(margin, top, width, HALF_H - margin * 2).lineWidth(1.5).stroke('#8a6a1f');
+  doc.rect(margin + 6, top + 6, width - 12, HALF_H - margin * 2 - 12).lineWidth(0.75).stroke('#8a6a1f');
 
   const logoW = 46;
   const logoH = logoW * (280 / 240);
@@ -107,7 +105,7 @@ function drawCard(doc, card, party, logoBuffer, yOffset) {
     .text(card.names.join('  ·  '), margin + 24, y, { width: width - 48, align: 'center', lineGap: 6 });
 
   doc.fontSize(9).font('Helvetica').fillColor('#666')
-    .text(party.coupleNames || '', margin, yOffset + CARD_H - margin - 18, { width, align: 'center' });
+    .text(party.coupleNames || '', margin, PAGE_H - margin - 18, { width, align: 'center' });
 
   doc.restore();
 }
