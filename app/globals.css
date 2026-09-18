@@ -1963,3 +1963,30 @@ img {
   cursor: pointer;
   padding: 0;
 }
+
+.seating-minimap {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 14px auto 0;
+  background: var(--void-850);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: var(--radius-md);
+}
+
+.seating-minimap-wall {
+  fill: #4a3826;
+}
+
+.seating-minimap-table {
+  fill: rgba(212, 175, 55, 0.12);
+  stroke: rgba(212, 175, 55, 0.3);
+  stroke-width: 2;
+}
+
+.seating-minimap-table.is-target {
+  fill: rgba(212, 175, 55, 0.55);
+  stroke: var(--gold-bright);
+  stroke-width: 4;
+}

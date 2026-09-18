@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
-import { seatablePool, resolveRef } from '@/lib/seating';
+import { seatablePool, resolveRef, CANVAS_WIDTH, CANVAS_HEIGHT } from '@/lib/seating';
 
-const CANVAS_WIDTH = 900;
-const CANVAS_HEIGHT = 520;
 const WALL_THICKNESS = 14;
 const SEAT_SIZE = 34;
 const SEAT_GAP = 8;

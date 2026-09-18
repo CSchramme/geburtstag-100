@@ -27,17 +27,22 @@ const CREST_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140"
   <text x="60" y="94" text-anchor="middle" font-family="Helvetica, sans-serif" font-weight="700" font-size="40" fill="url(#g)">T&amp;R</text>
 </svg>`;
 
+// One card per table (not per person) - lists everyone seated there, since
+// the card is meant to stand at the table itself, not at an individual
+// place setting.
 export async function GET() {
   const state = get();
 
-  const cards = [];
-  state.seating.tables.forEach((table) => {
-    (table.seatRefs || []).forEach((ref) => {
-      if (!ref) return;
-      const resolved = resolveRef(state.guests, state.rsvps, ref);
-      if (resolved) cards.push({ name: resolved.name, tableName: table.name });
-    });
-  });
+  const cards = state.seating.tables
+    .map((table) => {
+      const names = (table.seatRefs || [])
+        .filter(Boolean)
+        .map((ref) => resolveRef(state.guests, state.rsvps, ref))
+        .filter(Boolean)
+        .map((r) => r.name);
+      return { tableName: table.name, names };
+    })
+    .filter((card) => card.names.length > 0);
 
   const logoBuffer = await sharp(Buffer.from(CREST_SVG), { density: 600 }).resize(240, 280).png().toBuffer();
 
@@ -85,18 +90,21 @@ function drawCard(doc, card, party, logoBuffer, yOffset) {
   doc.rect(margin, top, width, CARD_H - margin * 2).lineWidth(1.5).stroke('#8a6a1f');
   doc.rect(margin + 6, top + 6, width - 12, CARD_H - margin * 2 - 12).lineWidth(0.75).stroke('#8a6a1f');
 
-  const logoW = 50;
+  const logoW = 46;
   const logoH = logoW * (280 / 240);
-  doc.image(logoBuffer, PAGE_W / 2 - logoW / 2, top + 16, { width: logoW, height: logoH });
+  doc.image(logoBuffer, PAGE_W / 2 - logoW / 2, top + 14, { width: logoW, height: logoH });
 
-  doc.fontSize(10).font('Helvetica').fillColor('#6e1c26')
-    .text((party.eventTitle || '').toUpperCase(), margin, top + 16 + logoH + 10, { width, align: 'center' });
+  let y = top + 14 + logoH + 8;
+  doc.fontSize(9).font('Helvetica').fillColor('#6e1c26')
+    .text((party.eventTitle || '').toUpperCase(), margin, y, { width, align: 'center' });
+  y += 18;
 
-  doc.fontSize(28).font('Times-Bold').fillColor('#2b1a0e')
-    .text(card.name, margin, yOffset + CARD_H / 2 + 6, { width, align: 'center' });
+  doc.fontSize(24).font('Times-Bold').fillColor('#2b1a0e')
+    .text(card.tableName, margin, y, { width, align: 'center' });
+  y += 40;
 
-  doc.fontSize(12).font('Helvetica-Bold').fillColor('#8a6a1f')
-    .text(card.tableName, margin, yOffset + CARD_H - margin - 38, { width, align: 'center' });
+  doc.fontSize(12).font('Helvetica').fillColor('#4a3826')
+    .text(card.names.join('  ·  '), margin + 24, y, { width: width - 48, align: 'center', lineGap: 6 });
 
   doc.fontSize(9).font('Helvetica').fillColor('#666')
     .text(party.coupleNames || '', margin, yOffset + CARD_H - margin - 18, { width, align: 'center' });
