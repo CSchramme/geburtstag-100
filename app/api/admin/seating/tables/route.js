@@ -14,7 +14,8 @@ export async function POST(request) {
       x: 40 + (count % 4) * 200,
       y: 40 + Math.floor(count / 4) * 160,
       seats: 6,
-      seatRefs: Array(6).fill(null)
+      seatRefs: Array(6).fill(null),
+      vertical: false
     });
   });
   return NextResponse.json({ ok: true, seating: get().seating });

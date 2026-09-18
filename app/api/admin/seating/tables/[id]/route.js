@@ -12,6 +12,7 @@ export async function PATCH(request, { params }) {
     if (typeof body.name === 'string') table.name = body.name.trim().slice(0, 60);
     if (Number.isFinite(body.x)) table.x = Math.max(0, body.x);
     if (Number.isFinite(body.y)) table.y = Math.max(0, body.y);
+    if (typeof body.vertical === 'boolean') table.vertical = body.vertical;
   });
   return NextResponse.json({ ok: true, seating: get().seating });
 }

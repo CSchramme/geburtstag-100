@@ -1745,10 +1745,32 @@ img {
 
 /* ---------- Sitzplan (Grundriss-Editor) ---------- */
 
+.seating-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 16px;
+}
+
 .seating-canvas-wrap {
   overflow-x: auto;
-  margin-top: 16px;
+  flex: 1 1 480px;
+  min-width: 0;
   border-radius: var(--radius-md);
+}
+
+.seating-sidebar {
+  flex: 0 0 280px;
+  min-width: 260px;
+  max-height: 616px;
+  display: flex;
+  flex-direction: column;
+}
+
+.seating-sidebar .seating-pool {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .seating-canvas {
@@ -1798,6 +1820,10 @@ img {
   padding: 4px 8px;
 }
 
+.seating-table.is-selected {
+  z-index: 5;
+}
+
 .seating-table.is-selected .seating-table-top {
   border-color: var(--gold-bright);
   box-shadow: 0 0 0 3px rgba(243, 216, 120, 0.25);
@@ -1811,8 +1837,15 @@ img {
   line-height: 1.2;
   text-align: center;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.seating-table-name.is-vertical {
+  display: block;
   white-space: nowrap;
+  overflow: visible;
 }
 
 .seating-seat {
@@ -1836,6 +1869,14 @@ img {
 
 .seating-seat-bottom {
   bottom: 0;
+}
+
+.seating-seat-left {
+  left: 0;
+}
+
+.seating-seat-right {
+  right: 0;
 }
 
 .seating-seat.is-empty {
@@ -1868,15 +1909,16 @@ img {
 }
 
 .seating-wall.is-selected {
+  z-index: 5;
   border-color: var(--gold-bright);
   box-shadow: 0 0 0 3px rgba(243, 216, 120, 0.25);
 }
 
 .seating-pool {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
   padding: 10px;
   border-radius: var(--radius-md);
   border: 1.5px dashed rgba(212, 175, 55, 0.3);
@@ -1896,9 +1938,10 @@ img {
 .seating-chip {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(212, 175, 55, 0.4);
   background: rgba(212, 175, 55, 0.08);
   font-size: 13px;

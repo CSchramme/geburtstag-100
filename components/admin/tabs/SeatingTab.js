@@ -10,7 +10,7 @@ const WALL_THICKNESS = 14;
 const SEAT_SIZE = 34;
 const SEAT_GAP = 8;
 const TABLE_SURFACE = 40;
-const TABLE_HEIGHT = SEAT_SIZE * 2 + TABLE_SURFACE;
+const TABLE_THICKNESS = SEAT_SIZE * 2 + TABLE_SURFACE;
 
 function clamp(v, min, max) {
   if (max < min) return min;
@@ -48,6 +48,9 @@ export default function SeatingTab({ seating, guests, rsvps }) {
   }
   async function renameTable(id, name) {
     await api(`/api/admin/seating/tables/${id}`, { method: 'PATCH', body: { name } });
+  }
+  async function rotateTable(id, vertical) {
+    await api(`/api/admin/seating/tables/${id}`, { method: 'PATCH', body: { vertical } });
   }
   async function seatDelta(id, delta) {
     await api(`/api/admin/seating/tables/${id}/seats`, { method: 'POST', body: { delta } });
@@ -95,42 +98,55 @@ export default function SeatingTab({ seating, guests, rsvps }) {
         <p className="small muted mt-0">
           {moveMode
             ? 'Verschieben-Modus aktiv: Tische und Wände lassen sich jetzt ziehen und neu platzieren. Zum Sitzplätze-Zuordnen den Knopf oben wieder ausschalten.'
-            : 'Zieht Gäste aus der Gästeliste unten direkt auf einen freien Platz — der Tisch wächst automatisch mit. Zum Verschieben der Tische und Wände selbst erst den Knopf oben aktivieren.'}
+            : 'Zieht Gäste aus der Gästeliste rechts direkt auf einen freien Platz — der Tisch wächst automatisch mit. Zum Verschieben der Tische und Wände selbst erst den Knopf oben aktivieren.'}
         </p>
 
-        <div className="seating-canvas-wrap">
-          <div
-            className={`seating-canvas ${moveMode ? 'is-move-mode' : ''}`}
-            style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
-            onPointerDown={() => setSelected(null)}
-          >
-            {walls.map((w) => (
-              <DraggableWall
-                key={w.id}
-                wall={w}
-                moveMode={moveMode}
-                selected={selected?.type === 'wall' && selected.id === w.id}
-                onSelect={() => setSelected({ type: 'wall', id: w.id })}
-                onMove={moveWall}
-              />
-            ))}
-            {tables.map((t) => (
-              <TableShape
-                key={t.id}
-                table={t}
-                guests={guests}
-                rsvps={rsvps}
-                moveMode={moveMode}
-                selected={selected?.type === 'table' && selected.id === t.id}
-                onSelect={() => setSelected({ type: 'table', id: t.id })}
-                onMove={moveTable}
-                dragOverKey={dragOverKey}
-                onSeatDragEnter={setDragOverKey}
-                onSeatDragLeave={(key) => setDragOverKey((k) => (k === key ? null : k))}
-                onSeatDrop={dropOnSeat}
-              />
-            ))}
+        <div className="seating-layout">
+          <div className="seating-canvas-wrap">
+            <div
+              className={`seating-canvas ${moveMode ? 'is-move-mode' : ''}`}
+              style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
+              onPointerDown={() => setSelected(null)}
+            >
+              {walls.map((w) => (
+                <DraggableWall
+                  key={w.id}
+                  wall={w}
+                  moveMode={moveMode}
+                  selected={selected?.type === 'wall' && selected.id === w.id}
+                  onSelect={() => setSelected({ type: 'wall', id: w.id })}
+                  onMove={moveWall}
+                />
+              ))}
+              {tables.map((t) => (
+                <TableShape
+                  key={t.id}
+                  table={t}
+                  guests={guests}
+                  rsvps={rsvps}
+                  moveMode={moveMode}
+                  selected={selected?.type === 'table' && selected.id === t.id}
+                  onSelect={() => setSelected({ type: 'table', id: t.id })}
+                  onMove={moveTable}
+                  dragOverKey={dragOverKey}
+                  onSeatDragEnter={setDragOverKey}
+                  onSeatDragLeave={(key) => setDragOverKey((k) => (k === key ? null : k))}
+                  onSeatDrop={dropOnSeat}
+                />
+              ))}
+            </div>
           </div>
+
+          <GuestListPanel
+            guests={guests}
+            rsvps={rsvps}
+            tables={tables}
+            moveMode={moveMode}
+            dragOverPool={dragOverKey === 'pool'}
+            onPoolDragEnter={() => setDragOverKey('pool')}
+            onPoolDragLeave={() => setDragOverKey((k) => (k === 'pool' ? null : k))}
+            onUnassign={dropOnPool}
+          />
         </div>
       </div>
 
@@ -141,31 +157,24 @@ export default function SeatingTab({ seating, guests, rsvps }) {
           onDelete={() => removeTable(selectedTable.id)}
           onRename={renameTable}
           onSeatDelta={seatDelta}
+          onRotate={rotateTable}
         />
       )}
 
       {selectedWall && (
         <WallProperties wall={selectedWall} onClose={() => setSelected(null)} onDelete={() => removeWall(selectedWall.id)} />
       )}
-
-      <GuestListPanel
-        guests={guests}
-        rsvps={rsvps}
-        tables={tables}
-        moveMode={moveMode}
-        dragOverPool={dragOverKey === 'pool'}
-        onPoolDragEnter={() => setDragOverKey('pool')}
-        onPoolDragLeave={() => setDragOverKey((k) => (k === 'pool' ? null : k))}
-        onUnassign={dropOnPool}
-      />
     </div>
   );
 }
 
 function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove, dragOverKey, onSeatDragEnter, onSeatDragLeave, onSeatDrop }) {
   const seatRefs = table.seatRefs && table.seatRefs.length ? table.seatRefs : [null, null];
-  const length = tableLength(seatRefs.length);
-  const height = TABLE_HEIGHT;
+  const vertical = Boolean(table.vertical);
+  const long = tableLength(seatRefs.length);
+  const short = TABLE_THICKNESS;
+  const width = vertical ? short : long;
+  const height = vertical ? long : short;
 
   const [pos, setPos] = useState({ x: table.x, y: table.y });
   const posRef = useRef(pos);
@@ -190,7 +199,7 @@ function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove
     draggingRef.current = true;
 
     function handleMove(ev) {
-      const nx = clamp(originX + (ev.clientX - startX), 0, rect.width - length);
+      const nx = clamp(originX + (ev.clientX - startX), 0, rect.width - width);
       const ny = clamp(originY + (ev.clientY - startY), 0, rect.height - height);
       posRef.current = { x: nx, y: ny };
       setPos(posRef.current);
@@ -205,25 +214,34 @@ function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove
     window.addEventListener('pointerup', handleUp);
   }
 
+  const surfaceStyle = vertical
+    ? { left: SEAT_SIZE, width: TABLE_SURFACE, top: 0, bottom: 0 }
+    : { top: SEAT_SIZE, height: TABLE_SURFACE, left: 0, right: 0 };
+  // Rotated tables are only TABLE_SURFACE (40px) wide, too narrow for even a
+  // short name - so the label itself rotates 90° and runs along the table's
+  // full length instead of wrapping/clipping in that narrow band.
+  const nameStyle = vertical ? { transform: 'rotate(-90deg)', width: long } : undefined;
+
   return (
     <div
-      className={`seating-table ${selected ? 'is-selected' : ''}`}
-      style={{ left: pos.x, top: pos.y, width: length, height }}
+      className={`seating-table ${vertical ? 'is-vertical' : ''} ${selected ? 'is-selected' : ''}`}
+      style={{ left: pos.x, top: pos.y, width, height }}
       onPointerDown={onPointerDown}
     >
-      <div className="seating-table-top" style={{ top: SEAT_SIZE, height: TABLE_SURFACE }}>
-        <span className="seating-table-name">{table.name}</span>
+      <div className="seating-table-top" style={surfaceStyle}>
+        <span className={`seating-table-name ${vertical ? 'is-vertical' : ''}`} style={nameStyle}>{table.name}</span>
       </div>
       {seatRefs.map((ref, i) => {
-        const side = i % 2 === 0 ? 'top' : 'bottom';
+        const side = i % 2 === 0 ? (vertical ? 'left' : 'top') : (vertical ? 'right' : 'bottom');
         const slot = Math.floor(i / 2);
+        const offset = SEAT_GAP + slot * (SEAT_SIZE + SEAT_GAP);
         const resolved = ref ? resolveRef(guests, rsvps, ref) : null;
         const key = `${table.id}:${i}`;
         return (
           <div
             key={i}
             className={`seating-seat seating-seat-${side} ${resolved ? 'is-occupied' : 'is-empty'} ${dragOverKey === key ? 'is-dragover' : ''}`}
-            style={{ left: SEAT_GAP + slot * (SEAT_SIZE + SEAT_GAP) }}
+            style={vertical ? { top: offset } : { left: offset }}
             draggable={Boolean(resolved)}
             onPointerDown={(e) => e.stopPropagation()}
             onDragStart={(e) => e.dataTransfer.setData('text/plain', ref)}
@@ -299,7 +317,7 @@ function DraggableWall({ wall, moveMode, selected, onSelect, onMove }) {
   );
 }
 
-function TableProperties({ table, onClose, onDelete, onRename, onSeatDelta }) {
+function TableProperties({ table, onClose, onDelete, onRename, onSeatDelta, onRotate }) {
   const [name, setName] = useState(table.name);
 
   useEffect(() => setName(table.name), [table.id, table.name]);
@@ -323,9 +341,12 @@ function TableProperties({ table, onClose, onDelete, onRename, onSeatDelta }) {
         <span className="label" style={{ margin: 0 }}>Sitzplätze: {seatCount}</span>
         <button type="button" className="btn btn-ghost btn-sm" onClick={() => onSeatDelta(table.id, -1)}>− Platz</button>
         <button type="button" className="btn btn-ghost btn-sm" onClick={() => onSeatDelta(table.id, 1)}>+ Platz</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => onRotate(table.id, !table.vertical)}>
+          {table.vertical ? 'Waagerecht stellen' : 'Senkrecht stellen'}
+        </button>
       </div>
       <p className="small muted" style={{ marginTop: 10 }}>
-        Zieht Gäste aus der Gästeliste unten direkt auf einen freien Platz an diesem Tisch — er wächst automatisch,
+        Zieht Gäste aus der Gästeliste rechts direkt auf einen freien Platz an diesem Tisch — er wächst automatisch,
         wenn mehr Plätze gebraucht werden. Ein Platz lässt sich nur entfernen, wenn er frei ist.
       </p>
     </div>
@@ -379,6 +400,7 @@ function WallProperties({ wall, onClose, onDelete }) {
 
 function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolDragEnter, onPoolDragLeave, onUnassign }) {
   const [name, setName] = useState('');
+  const [search, setSearch] = useState('');
 
   async function add(e) {
     e.preventDefault();
@@ -398,19 +420,29 @@ function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolD
   });
 
   const pool = seatablePool(guests, rsvps);
+  const needle = search.trim().toLowerCase();
+  const filteredPool = needle ? pool.filter((p) => p.name.toLowerCase().includes(needle)) : pool;
 
   return (
-    <div className="panel">
+    <div className="panel seating-sidebar">
       <p className="panel-title">Gästeliste</p>
       <p className="small muted mt-0">
         Registriert hier Gäste, die nicht selbst über die Zusage-Seite geantwortet haben. Zieht anschließend jede
-        Person von hier auf einen freien Platz im Grundriss oben — oder zieht sie von dort wieder hierher zurück,
+        Person von hier auf einen freien Platz im Grundriss links — oder zieht sie von dort wieder hierher zurück,
         um den Platz freizugeben.
       </p>
       <form className="inline-form" onSubmit={add}>
         <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name eintragen" />
         <button type="submit" className="btn btn-gold btn-sm">Registrieren</button>
       </form>
+
+      <input
+        className="input"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Suchen …"
+        style={{ marginTop: 12 }}
+      />
 
       <div
         className={`seating-pool ${dragOverPool ? 'is-dragover' : ''} ${moveMode ? 'is-disabled' : ''}`}
@@ -426,7 +458,7 @@ function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolD
           onUnassign(ref);
         }}
       >
-        {pool.map((p) => {
+        {filteredPool.map((p) => {
           const tableName = seatedMap.get(p.ref);
           return (
             <div key={p.ref} className={`seating-chip ${tableName ? 'is-seated' : ''}`} draggable={!tableName} onDragStart={(e) => e.dataTransfer.setData('text/plain', p.ref)}>
@@ -447,6 +479,7 @@ function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolD
           );
         })}
         {!pool.length && <p className="muted small">Noch niemand registriert oder zugesagt.</p>}
+        {pool.length > 0 && !filteredPool.length && <p className="muted small">Keine Treffer.</p>}
       </div>
     </div>
   );
