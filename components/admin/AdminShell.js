@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Crest from '@/components/Crest';
+import { playSoundEffect } from '@/lib/playSoundEffect';
 import OverviewTab from './tabs/OverviewTab';
 import PartyTab from './tabs/PartyTab';
 import RsvpTab from './tabs/RsvpTab';
@@ -38,8 +39,63 @@ function pendingCount(list) {
   return list.filter((x) => x.status === 'pending').length;
 }
 
+const TOAST_LIFETIME_MS = 9000;
+
 export default function AdminShell({ state, connected, onLogout }) {
   const [tab, setTab] = useState('uebersicht');
+  const [toasts, setToasts] = useState([]);
+  const seenRef = useRef(null);
+
+  // Notify about new guestbook/gallery/song-request submissions as they
+  // arrive, regardless of which tab is currently open - a popup + chime,
+  // since a badge count alone is easy to miss while running the party.
+  useEffect(() => {
+    if (!state) return;
+    if (!seenRef.current) {
+      seenRef.current = {
+        guestbook: new Set(state.guestbook.map((g) => g.id)),
+        gallery: new Set(state.gallery.map((g) => g.id)),
+        songRequests: new Set(state.songRequests.map((s) => s.id))
+      };
+      return;
+    }
+    const seen = seenRef.current;
+    const fresh = [];
+
+    state.guestbook.forEach((g) => {
+      if (seen.guestbook.has(g.id)) return;
+      seen.guestbook.add(g.id);
+      fresh.push({ id: `gb-${g.id}`, tab: 'gaestebuch', title: 'Neuer Gästebuch-Eintrag', body: `${g.name}: „${g.message}“` });
+    });
+    state.gallery.forEach((g) => {
+      if (seen.gallery.has(g.id)) return;
+      seen.gallery.add(g.id);
+      fresh.push({ id: `gal-${g.id}`, tab: 'galerie', title: 'Neues Foto in der Galerie', body: g.name || g.caption || 'Ohne Namen' });
+    });
+    state.songRequests.forEach((s) => {
+      if (seen.songRequests.has(s.id)) return;
+      seen.songRequests.add(s.id);
+      fresh.push({ id: `sr-${s.id}`, tab: 'master', title: 'Neuer Musikwunsch', body: s.text });
+    });
+
+    if (fresh.length) {
+      setToasts((prev) => [...prev, ...fresh]);
+      playSoundEffect('chime', 70);
+      fresh.forEach((t) => {
+        setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== t.id)), TOAST_LIFETIME_MS);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.guestbook, state?.gallery, state?.songRequests]);
+
+  function dismissToast(id) {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function openToast(t) {
+    setTab(t.tab);
+    dismissToast(t.id);
+  }
 
   async function handleLogout() {
     await fetch('/api/admin/logout', { method: 'POST' });
@@ -54,6 +110,30 @@ export default function AdminShell({ state, connected, onLogout }) {
 
   return (
     <div className="admin-shell">
+      {toasts.length > 0 && (
+        <div className="admin-toast-stack">
+          {toasts.map((t) => (
+            <div key={t.id} className="admin-toast" onClick={() => openToast(t)}>
+              <div className="admin-toast-body">
+                <strong>{t.title}</strong>
+                <p>{t.body}</p>
+              </div>
+              <button
+                type="button"
+                className="admin-toast-close"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dismissToast(t.id);
+                }}
+                aria-label="Schließen"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <header className="admin-topbar">
         <div className="admin-topbar-brand">
           <Crest size={36} />
