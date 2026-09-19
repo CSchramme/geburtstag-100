@@ -1896,6 +1896,16 @@ img {
   background: rgba(212, 175, 55, 0.18);
 }
 
+.seating-seat.is-present {
+  border-color: var(--forest-bright);
+  background: linear-gradient(180deg, rgba(92, 147, 103, 0.4), rgba(0, 0, 0, 0.2)), var(--void-800);
+}
+
+.seating-table.is-all-present .seating-table-top {
+  border-color: var(--forest-bright);
+  background: linear-gradient(180deg, rgba(92, 147, 103, 0.28), rgba(0, 0, 0, 0.25)), var(--void-800);
+}
+
 .seating-wall {
   position: absolute;
   background: repeating-linear-gradient(45deg, #4a3826, #4a3826 6px, #3a2b1a 6px, #3a2b1a 12px);
@@ -1952,6 +1962,11 @@ img {
 .seating-chip.is-seated {
   opacity: 0.55;
   cursor: default;
+}
+
+.seating-chip.is-present {
+  border-color: var(--forest-bright);
+  background: rgba(92, 147, 103, 0.18);
 }
 
 .seating-chip-remove {

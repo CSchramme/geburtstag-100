@@ -13,6 +13,7 @@ export async function DELETE(request, { params }) {
         if (r && r.startsWith(prefix)) t.seatRefs[i] = null;
       });
     });
+    state.checkedIn = state.checkedIn.filter((r) => !r.startsWith(prefix));
   });
   return NextResponse.json({ ok: true, rsvps: get().rsvps, seating: get().seating });
 }

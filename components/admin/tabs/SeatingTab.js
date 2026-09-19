@@ -24,13 +24,14 @@ function tableLength(seatCount) {
   return perSide * (SEAT_SIZE + SEAT_GAP) + SEAT_GAP;
 }
 
-export default function SeatingTab({ seating, guests, rsvps }) {
+export default function SeatingTab({ seating, guests, rsvps, checkedIn }) {
   const [selected, setSelected] = useState(null);
   const [moveMode, setMoveMode] = useState(false);
   const [dragOverKey, setDragOverKey] = useState(null);
 
   const tables = seating.tables;
   const walls = seating.walls;
+  const presentSet = new Set(checkedIn);
 
   async function addTable() {
     await api('/api/admin/seating/tables', { method: 'POST', body: { name: `Tisch ${tables.length + 1}` } });
@@ -122,6 +123,7 @@ export default function SeatingTab({ seating, guests, rsvps }) {
                   table={t}
                   guests={guests}
                   rsvps={rsvps}
+                  presentSet={presentSet}
                   moveMode={moveMode}
                   selected={selected?.type === 'table' && selected.id === t.id}
                   onSelect={() => setSelected({ type: 'table', id: t.id })}
@@ -139,6 +141,7 @@ export default function SeatingTab({ seating, guests, rsvps }) {
             guests={guests}
             rsvps={rsvps}
             tables={tables}
+            presentSet={presentSet}
             moveMode={moveMode}
             dragOverPool={dragOverKey === 'pool'}
             onPoolDragEnter={() => setDragOverKey('pool')}
@@ -166,8 +169,10 @@ export default function SeatingTab({ seating, guests, rsvps }) {
   );
 }
 
-function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove, dragOverKey, onSeatDragEnter, onSeatDragLeave, onSeatDrop }) {
+function TableShape({ table, guests, rsvps, presentSet, moveMode, selected, onSelect, onMove, dragOverKey, onSeatDragEnter, onSeatDragLeave, onSeatDrop }) {
   const seatRefs = table.seatRefs && table.seatRefs.length ? table.seatRefs : [null, null];
+  const occupiedRefs = seatRefs.filter(Boolean);
+  const allPresent = occupiedRefs.length > 0 && occupiedRefs.every((ref) => presentSet.has(ref));
   const vertical = Boolean(table.vertical);
   const long = tableLength(seatRefs.length);
   const short = TABLE_THICKNESS;
@@ -222,7 +227,7 @@ function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove
 
   return (
     <div
-      className={`seating-table ${vertical ? 'is-vertical' : ''} ${selected ? 'is-selected' : ''}`}
+      className={`seating-table ${vertical ? 'is-vertical' : ''} ${selected ? 'is-selected' : ''} ${allPresent ? 'is-all-present' : ''}`}
       style={{ left: pos.x, top: pos.y, width, height }}
       onPointerDown={onPointerDown}
     >
@@ -234,11 +239,12 @@ function TableShape({ table, guests, rsvps, moveMode, selected, onSelect, onMove
         const slot = Math.floor(i / 2);
         const offset = SEAT_GAP + slot * (SEAT_SIZE + SEAT_GAP);
         const resolved = ref ? resolveRef(guests, rsvps, ref) : null;
+        const present = ref ? presentSet.has(ref) : false;
         const key = `${table.id}:${i}`;
         return (
           <div
             key={i}
-            className={`seating-seat seating-seat-${side} ${resolved ? 'is-occupied' : 'is-empty'} ${dragOverKey === key ? 'is-dragover' : ''}`}
+            className={`seating-seat seating-seat-${side} ${resolved ? 'is-occupied' : 'is-empty'} ${present ? 'is-present' : ''} ${dragOverKey === key ? 'is-dragover' : ''}`}
             style={vertical ? { top: offset } : { left: offset }}
             draggable={Boolean(resolved)}
             onPointerDown={(e) => e.stopPropagation()}
@@ -396,7 +402,7 @@ function WallProperties({ wall, onClose, onDelete }) {
   );
 }
 
-function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolDragEnter, onPoolDragLeave, onUnassign }) {
+function GuestListPanel({ guests, rsvps, tables, presentSet, moveMode, dragOverPool, onPoolDragEnter, onPoolDragLeave, onUnassign }) {
   const [name, setName] = useState('');
   const [search, setSearch] = useState('');
 
@@ -458,8 +464,14 @@ function GuestListPanel({ guests, rsvps, tables, moveMode, dragOverPool, onPoolD
       >
         {filteredPool.map((p) => {
           const tableName = seatedMap.get(p.ref);
+          const present = presentSet.has(p.ref);
           return (
-            <div key={p.ref} className={`seating-chip ${tableName ? 'is-seated' : ''}`} draggable={!tableName} onDragStart={(e) => e.dataTransfer.setData('text/plain', p.ref)}>
+            <div
+              key={p.ref}
+              className={`seating-chip ${tableName ? 'is-seated' : ''} ${present ? 'is-present' : ''}`}
+              draggable={!tableName}
+              onDragStart={(e) => e.dataTransfer.setData('text/plain', p.ref)}
+            >
               <span>{p.name}</span>
               {tableName ? (
                 <span className="small muted"> · {tableName}</span>

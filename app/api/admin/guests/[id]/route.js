@@ -25,6 +25,7 @@ export async function DELETE(request, { params }) {
         if (r === ref) t.seatRefs[i] = null;
       });
     });
+    state.checkedIn = state.checkedIn.filter((r) => r !== ref);
   });
   return NextResponse.json({ ok: true, guests: get().guests, seating: get().seating });
 }

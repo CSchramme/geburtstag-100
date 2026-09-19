@@ -5,6 +5,7 @@ import Crest from '@/components/Crest';
 import OverviewTab from './tabs/OverviewTab';
 import PartyTab from './tabs/PartyTab';
 import RsvpTab from './tabs/RsvpTab';
+import AttendanceTab from './tabs/AttendanceTab';
 import SeatingTab from './tabs/SeatingTab';
 import ChronicleTab from './tabs/ChronicleTab';
 import StageTab from './tabs/StageTab';
@@ -22,6 +23,7 @@ const TABS = [
   { id: 'fest', label: 'Fest' },
   { id: 'zusagen', label: 'Zusagen' },
   { id: 'sitzplan', label: 'Sitzplan' },
+  { id: 'anwesenheit', label: 'Anwesenheit' },
   { id: 'chronik', label: 'Chronik' },
   { id: 'buehne', label: 'Bühne' },
   { id: 'master', label: 'Master' },
@@ -92,7 +94,10 @@ export default function AdminShell({ state, connected, onLogout }) {
         {tab === 'uebersicht' && <OverviewTab state={state} onNavigate={setTab} />}
         {tab === 'fest' && <PartyTab party={state.party} impressum={state.impressum} />}
         {tab === 'zusagen' && <RsvpTab rsvps={state.rsvps} />}
-        {tab === 'sitzplan' && <SeatingTab seating={state.seating} guests={state.guests} rsvps={state.rsvps} />}
+        {tab === 'sitzplan' && (
+          <SeatingTab seating={state.seating} guests={state.guests} rsvps={state.rsvps} checkedIn={state.checkedIn} />
+        )}
+        {tab === 'anwesenheit' && <AttendanceTab guests={state.guests} rsvps={state.rsvps} checkedIn={state.checkedIn} />}
         {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} />}
         {tab === 'buehne' && (
           <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />

@@ -80,6 +80,7 @@
   "songRequests": [],
   "rsvps": [],
   "guests": [],
+  "checkedIn": [],
   "seating": {
     "tables": [],
     "walls": []

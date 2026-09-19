@@ -1,4 +1,5 @@
 import { SCENE_LABELS } from '@/lib/displayScenes';
+import { seatablePool } from '@/lib/seating';
 import QrCodePanel from './QrCodePanel';
 import ExportPanel from './ExportPanel';
 
@@ -11,6 +12,9 @@ export default function OverviewTab({ state, onNavigate }) {
   const confirmedGuests = state.rsvps
     .filter((r) => r.attending === 'yes')
     .reduce((sum, r) => sum + (r.guestCount || 1), 0);
+  const pool = seatablePool(state.guests, state.rsvps);
+  const presentSet = new Set(state.checkedIn);
+  const presentCount = pool.filter((p) => presentSet.has(p.ref)).length;
 
   const cards = [
     {
@@ -18,6 +22,12 @@ export default function OverviewTab({ state, onNavigate }) {
       value: `${confirmedGuests} Person${confirmedGuests === 1 ? '' : 'en'}`,
       action: 'zusagen',
       cta: 'Rückmeldungen ansehen'
+    },
+    {
+      title: 'Anwesend',
+      value: `${presentCount} / ${pool.length}`,
+      action: 'anwesenheit',
+      cta: 'Einchecken'
     },
     {
       title: 'Aktuelle Bühnen-Szene',
