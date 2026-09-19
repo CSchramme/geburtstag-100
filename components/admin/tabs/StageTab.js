@@ -121,14 +121,15 @@ function TickerPanel({ ticker }) {
           aria-label="Laufschrift ein-/ausblenden"
         />
       </div>
+      <p className="small muted mt-0">Jede Zeile wird ein eigener Eintrag, die sich dann alle in der Laufschrift verteilen.</p>
       <div className="field">
         <textarea
           className="textarea"
-          rows={2}
+          rows={4}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onBlur={() => save({ text, active: ticker.active })}
-          placeholder="z.B. Der Met wird um 20 Uhr ausgeschenkt …"
+          placeholder={'Der Met wird um 20 Uhr ausgeschenkt\nBitte Handys stumm schalten\nDie Toilette ist hinter der Bühne'}
         />
       </div>
     </div>

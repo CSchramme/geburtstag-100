@@ -437,8 +437,15 @@ img {
   color: var(--gold-bright);
   text-transform: uppercase;
 }
-.ticker-track span {
-  padding: 0 3em;
+.ticker-item {
+  display: inline-block;
+}
+.ticker-sep {
+  display: inline-block;
+  margin: 0 1.2em;
+  opacity: 0.5;
+  font-size: 0.7em;
+  vertical-align: middle;
 }
 @keyframes ticker-scroll {
   from { transform: translateX(0); }
