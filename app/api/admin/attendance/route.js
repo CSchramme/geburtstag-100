@@ -1,14 +1,30 @@
 import { NextResponse } from 'next/server';
-import { get, update } from '@/lib/store';
+import { get, update, id as genId } from '@/lib/store';
+import { resolveRef } from '@/lib/seating';
+import { fireSound } from '@/lib/sound';
 
 export const runtime = 'nodejs';
+
+const WELCOME_DURATION_MS = 8000;
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
   const { ref } = body;
   if (!ref) return NextResponse.json({ error: 'ref erforderlich' }, { status: 400 });
   update((state) => {
-    if (!state.checkedIn.includes(ref)) state.checkedIn.push(ref);
+    if (state.checkedIn.includes(ref)) return;
+    state.checkedIn.push(ref);
+
+    const resolved = resolveRef(state.guests, state.rsvps, ref);
+    const previousScene = state.display.scene === 'welcome' ? state.display.welcome.previousScene : state.display.scene;
+    state.display.welcome = {
+      name: resolved ? resolved.name : '',
+      nonce: genId(),
+      previousScene,
+      revertAt: Date.now() + WELCOME_DURATION_MS
+    };
+    state.display.scene = 'welcome';
+    fireSound(state, 'fanfare');
   });
   return NextResponse.json({ ok: true, checkedIn: get().checkedIn });
 }

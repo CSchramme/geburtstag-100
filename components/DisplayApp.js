@@ -4,12 +4,14 @@ import { useLiveState } from '@/lib/useLiveState';
 import Ticker from '@/components/public/Ticker';
 import NowPlaying from '@/components/NowPlaying';
 import IdleScene from '@/components/display/IdleScene';
+import WelcomeScene from '@/components/display/WelcomeScene';
 import ChronicleScene from '@/components/display/ChronicleScene';
 import CountdownScene from '@/components/display/CountdownScene';
 import QuizScene from '@/components/display/QuizScene';
 import PresentationScene from '@/components/display/PresentationScene';
 import GalleryScene from '@/components/display/GalleryScene';
 import GuestbookScene from '@/components/display/GuestbookScene';
+import StatsScene from '@/components/display/StatsScene';
 import SoundEffectsListener from '@/components/display/SoundEffectsListener';
 import SceneTransition from '@/components/display/SceneTransition';
 
@@ -24,12 +26,14 @@ export default function DisplayApp() {
 
   let sceneNode = null;
   if (scene === 'idle') sceneNode = <IdleScene party={state.party} />;
+  else if (scene === 'welcome') sceneNode = <WelcomeScene party={state.party} welcome={state.display.welcome} />;
   else if (scene === 'chronicle') sceneNode = <ChronicleScene chronicle={state.chronicle} />;
   else if (scene === 'countdown') sceneNode = <CountdownScene countdown={state.countdown} sound={state.sound} />;
   else if (scene === 'quiz') sceneNode = <QuizScene quiz={state.quiz} />;
   else if (scene === 'presentation') sceneNode = <PresentationScene presentation={state.presentation} />;
   else if (scene === 'gallery') sceneNode = <GalleryScene gallery={state.gallery} />;
   else if (scene === 'guestbook') sceneNode = <GuestbookScene guestbook={state.guestbook} />;
+  else if (scene === 'stats') sceneNode = <StatsScene stats={state.stats} />;
 
   return (
     <div className="display-root">

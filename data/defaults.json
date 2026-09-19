@@ -49,6 +49,12 @@
   },
   "display": {
     "scene": "idle",
+    "welcome": {
+      "name": "",
+      "nonce": "",
+      "previousScene": "idle",
+      "revertAt": 0
+    },
     "autoRotate": {
       "enabled": false,
       "paused": false,
