@@ -52,14 +52,14 @@
     "welcome": {
       "name": "",
       "nonce": "",
-      "previousScene": "idle",
       "revertAt": 0
     },
     "autoRotate": {
       "enabled": false,
       "paused": false,
       "intervalSeconds": 20,
-      "lastRotateAt": 0
+      "lastRotateAt": 0,
+      "selectedScenes": ["idle", "chronicle", "gallery", "guestbook"]
     }
   },
   "sound": {

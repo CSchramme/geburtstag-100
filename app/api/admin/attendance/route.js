@@ -16,11 +16,9 @@ export async function POST(request) {
     state.checkedIn.push(ref);
 
     const resolved = resolveRef(state.guests, state.rsvps, ref);
-    const previousScene = state.display.scene === 'welcome' ? state.display.welcome.previousScene : state.display.scene;
     state.display.welcome = {
       name: resolved ? resolved.name : '',
       nonce: genId(),
-      previousScene,
       revertAt: Date.now() + WELCOME_DURATION_MS
     };
     state.display.scene = 'welcome';

@@ -1152,6 +1152,24 @@ img {
   gap: 8px;
 }
 
+.scene-select-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.06);
+  font-size: 13px;
+  color: var(--parchment);
+  cursor: pointer;
+  user-select: none;
+}
+
+.scene-select-chip input {
+  accent-color: var(--gold);
+}
+
 .search-results {
   display: flex;
   flex-direction: column;
@@ -1304,6 +1322,19 @@ img {
   opacity: 0.6;
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   text-align: center;
+}
+
+.display-welcome-pop {
+  animation: welcome-pop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes welcome-pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .display-welcome-pop { animation: none; }
 }
 
 .display-timeline {

@@ -13,6 +13,9 @@ export async function PUT(request) {
   update((state) => {
     if (state.display.scene !== body.scene) fireSound(state, 'whoosh');
     state.display.scene = body.scene;
+    // Picking Willkommen by hand means "show the generic greeting now", not
+    // "replay whoever last checked in" - clear any pending name/timer.
+    if (body.scene === 'welcome') state.display.welcome = { name: '', nonce: '', revertAt: 0 };
     // a manual pick should stick until the host explicitly resumes rotation
     if (state.display.autoRotate) state.display.autoRotate.paused = true;
   });

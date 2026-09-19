@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import CountdownClock from '@/components/CountdownClock';
-import { SCENES } from '@/lib/displayScenes';
+import { SCENES, ROTATABLE_SCENE_IDS, SCENE_LABELS, DEFAULT_ROTATION_SCENES } from '@/lib/displayScenes';
 
 export default function StageTab({ display, ticker, countdown, presentation }) {
   return (
@@ -44,6 +44,7 @@ function SceneSwitcher({ active }) {
 
 function RotationPanel({ autoRotate }) {
   const [interval, setInterval_] = useState(autoRotate.intervalSeconds || 20);
+  const selected = autoRotate.selectedScenes || DEFAULT_ROTATION_SCENES;
 
   async function setEnabled(enabled) {
     await api('/api/admin/display/rotation', { method: 'PUT', body: { enabled } });
@@ -53,6 +54,10 @@ function RotationPanel({ autoRotate }) {
   }
   async function commitInterval(value) {
     await api('/api/admin/display/rotation', { method: 'PUT', body: { intervalSeconds: value } });
+  }
+  async function toggleScene(sceneId) {
+    const next = selected.includes(sceneId) ? selected.filter((id) => id !== sceneId) : [...selected, sceneId];
+    await api('/api/admin/display/rotation', { method: 'PUT', body: { selectedScenes: next } });
   }
 
   return (
@@ -68,12 +73,26 @@ function RotationPanel({ autoRotate }) {
         />
       </div>
       <p className="small muted mt-0">
-        Wechselt selbstständig zwischen Wappen, Chronik, Galerie und Gästebuch — Galerie und Gästebuch werden
-        übersprungen, solange dort nichts freigegeben ist. Countdown, Hofnarr und Präsentation bleiben außen vor
-        und werden nur manuell gezeigt.
+        Wechselt selbstständig zwischen den ausgewählten Szenen — Galerie und Gästebuch werden dabei übersprungen,
+        solange dort nichts freigegeben ist. Countdown, Hofnarr, Präsentation und Willkommen bleiben immer außen vor
+        und werden nur manuell bzw. beim Einchecken gezeigt.
       </p>
+
+      <div className="inline-form" style={{ marginTop: 10 }}>
+        {ROTATABLE_SCENE_IDS.map((sceneId) => (
+          <label key={sceneId} className="scene-select-chip">
+            <input
+              type="checkbox"
+              checked={selected.includes(sceneId)}
+              onChange={() => toggleScene(sceneId)}
+            />
+            {SCENE_LABELS[sceneId]}
+          </label>
+        ))}
+      </div>
+
       {autoRotate.enabled && (
-        <div className="inline-form">
+        <div className="inline-form" style={{ marginTop: 12 }}>
           <div className="field" style={{ maxWidth: 140 }}>
             <label className="label" htmlFor="rotate-interval">Sekunden je Szene</label>
             <input
