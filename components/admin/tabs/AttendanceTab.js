@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api } from '@/lib/api';
 import { seatablePool } from '@/lib/seating';
+import QrCodePanel from './QrCodePanel';
 
 export default function AttendanceTab({ guests, rsvps, checkedIn }) {
   const [search, setSearch] = useState('');
@@ -42,6 +43,13 @@ export default function AttendanceTab({ guests, rsvps, checkedIn }) {
           <p className="overview-value">{presentCount} / {pool.length}</p>
         </div>
       </div>
+
+      <QrCodePanel
+        path="/einchecken"
+        title="Self-Check-in per QR-Code"
+        intro="Ausgedruckt am Eingang aufstellen — Gäste checken sich dann selbst ein:"
+        filename="check-in-qr.png"
+      />
 
       <form className="panel" onSubmit={addWalkIn}>
         <p className="panel-title">Unangemeldeter Gast an der Tür</p>

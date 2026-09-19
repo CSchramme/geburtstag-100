@@ -575,6 +575,25 @@ img {
   gap: 44px;
 }
 
+.checkin-inner {
+  max-width: 480px;
+  padding-top: 8vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.checkin-inner .panel {
+  width: 100%;
+  text-align: left;
+  margin-top: 28px;
+}
+
+.checkin-done {
+  padding: 36px 24px;
+}
+
 .public-header {
   padding: 36px 0 22px;
   text-align: center;

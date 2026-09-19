@@ -12,6 +12,7 @@ import PresentationScene from '@/components/display/PresentationScene';
 import GalleryScene from '@/components/display/GalleryScene';
 import GuestbookScene from '@/components/display/GuestbookScene';
 import StatsScene from '@/components/display/StatsScene';
+import FarewellScene from '@/components/display/FarewellScene';
 import SoundEffectsListener from '@/components/display/SoundEffectsListener';
 import SceneTransition from '@/components/display/SceneTransition';
 
@@ -34,6 +35,7 @@ export default function DisplayApp() {
   else if (scene === 'gallery') sceneNode = <GalleryScene gallery={state.gallery} />;
   else if (scene === 'guestbook') sceneNode = <GuestbookScene guestbook={state.guestbook} />;
   else if (scene === 'stats') sceneNode = <StatsScene stats={state.stats} />;
+  else if (scene === 'farewell') sceneNode = <FarewellScene party={state.party} />;
 
   return (
     <div className="display-root">
