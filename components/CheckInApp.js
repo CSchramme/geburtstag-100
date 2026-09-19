@@ -27,8 +27,13 @@ export default function CheckInApp() {
   function handleQueryChange(e) {
     setQuery(e.target.value);
     setLetter('');
-    setSearched(true);
+    setSearched(false);
     setError('');
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    setSearched(true);
   }
 
   async function doCheckIn(ref, name) {
@@ -47,7 +52,7 @@ export default function CheckInApp() {
     }
   }
 
-  const needle = query.trim().toLowerCase();
+  const needle = searched ? query.trim().toLowerCase() : '';
   const rawMatches = needle ? roster.filter((p) => p.name.toLowerCase().includes(needle)) : [];
   const needsLetter = rawMatches.length > 1 && !letter.trim();
   const finalMatches = needsLetter
@@ -69,17 +74,20 @@ export default function CheckInApp() {
             <p className="muted">Ihr seid eingecheckt — schaut auf die Leinwand!</p>
           </div>
         ) : (
-          <form className="panel" onSubmit={(e) => e.preventDefault()}>
+          <form className="panel" onSubmit={handleSearch}>
             <div className="field">
               <label className="label" htmlFor="checkin-search">Euer Name</label>
-              <input
-                id="checkin-search"
-                className="input"
-                value={query}
-                onChange={handleQueryChange}
-                placeholder="z.B. Max Mustermann"
-                autoFocus
-              />
+              <div className="inline-form">
+                <input
+                  id="checkin-search"
+                  className="input"
+                  value={query}
+                  onChange={handleQueryChange}
+                  placeholder="z.B. Max Mustermann"
+                  autoFocus
+                />
+                <button type="submit" className="btn btn-gold btn-sm">Suchen</button>
+              </div>
             </div>
 
             {needsLetter && (
