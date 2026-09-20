@@ -1,7 +1,7 @@
-export default function QuizScene({ quiz }) {
+export default function QuizScene({ quiz, theme }) {
   return (
     <div className="display-scene display-scene-center">
-      <p className="display-heading">Das Rätsel des Hofnarren</p>
+      <p className="display-heading">{theme.labels.quizSceneHeading}</p>
       <p className="display-sub">
         {quiz.roundName} · Person {quiz.candidateNumber} von {quiz.candidateCount}
       </p>
@@ -15,7 +15,7 @@ export default function QuizScene({ quiz }) {
           ))}
         </ul>
       ) : (
-        <p className="display-muted">Der Hofnarr schweigt noch …</p>
+        <p className="display-muted">{theme.labels.quizSceneEmptyState}</p>
       )}
     </div>
   );

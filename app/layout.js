@@ -1,4 +1,5 @@
-import { Cinzel, Cinzel_Decorative, EB_Garamond } from 'next/font/google';
+import { Cinzel, Cinzel_Decorative, EB_Garamond, Playfair_Display, Inter } from 'next/font/google';
+import { get } from '@/lib/store';
 import './globals.css';
 
 const cinzel = Cinzel({
@@ -23,10 +24,31 @@ const garamond = EB_Garamond({
   display: 'swap'
 });
 
-export const metadata = {
-  title: 'Tamara & Ralph – 100 Jahre',
-  description: 'Ein mittelalterliches Hoffest zu Ehren zweier Kronen, die gemeinsam 100 Jahre vollenden.'
-};
+// "Modern / Neutral" theme's font pairing (see lib/theme.js's
+// buildFontVars) - loaded alongside the medieval fonts so switching themes
+// is an instant CSS variable swap, no page reload needed.
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-modern-display',
+  display: 'swap'
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-modern-body',
+  display: 'swap'
+});
+
+export async function generateMetadata() {
+  const { party } = get();
+  const title = party?.eventTitle || party?.coupleNames || '100 Jahre';
+  return {
+    title,
+    description: party?.introText || 'Eine private Feier.'
+  };
+}
 
 export const viewport = {
   themeColor: '#120b07',
@@ -36,7 +58,10 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="de" className={`${cinzel.variable} ${cinzelDecorative.variable} ${garamond.variable}`}>
+    <html
+      lang="de"
+      className={`${cinzel.variable} ${cinzelDecorative.variable} ${garamond.variable} ${playfair.variable} ${inter.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

@@ -10,7 +10,7 @@ function formatDate(dateStr) {
   }
 }
 
-export default function Hero({ party, countdown }) {
+export default function Hero({ party, countdown, theme }) {
   const dateLabel = formatDate(party.date);
 
   return (
@@ -46,7 +46,7 @@ export default function Hero({ party, countdown }) {
         )}
         {party.dressCode && (
           <div>
-            <dt>Gewandung</dt>
+            <dt>{theme.labels.dressCodeFieldLabel}</dt>
             <dd>{party.dressCode}</dd>
           </div>
         )}

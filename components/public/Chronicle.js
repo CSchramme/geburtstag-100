@@ -1,7 +1,8 @@
-export default function Chronicle({ chronicle }) {
+export default function Chronicle({ chronicle, theme }) {
+  const labels = theme.labels;
   return (
     <section id="chronik" className="section">
-      <h2 className="section-title">Die Chronik des Abends</h2>
+      <h2 className="section-title">{labels.publicChronicleHeading}</h2>
       {chronicle?.length ? (
         <ol className="timeline timeline-live">
           {chronicle.map((item) => (
@@ -15,7 +16,7 @@ export default function Chronicle({ chronicle }) {
           ))}
         </ol>
       ) : (
-        <p className="muted center-text">Die Schreiber des Hofes warten noch auf den ersten Eintrag …</p>
+        <p className="muted center-text">{labels.publicChronicleEmptyState}</p>
       )}
     </section>
   );

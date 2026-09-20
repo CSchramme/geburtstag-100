@@ -1,8 +1,8 @@
-export default function ChronicleScene({ chronicle }) {
+export default function ChronicleScene({ chronicle, theme }) {
   const recent = chronicle.slice(-8);
   return (
     <div className="display-scene">
-      <h2 className="display-heading">Die Chronik des Abends</h2>
+      <h2 className="display-heading">{theme.labels.chronicleSceneHeading}</h2>
       {recent.length ? (
         <ol className="display-timeline">
           {recent.map((item) => (
@@ -13,7 +13,7 @@ export default function ChronicleScene({ chronicle }) {
           ))}
         </ol>
       ) : (
-        <p className="display-muted">Die Schreiber des Hofes warten auf den ersten Eintrag …</p>
+        <p className="display-muted">{theme.labels.chronicleSceneEmptyState}</p>
       )}
     </div>
   );

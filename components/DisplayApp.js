@@ -1,6 +1,8 @@
 'use client';
 
 import { useLiveState } from '@/lib/useLiveState';
+import { resolveTheme } from '@/lib/theme';
+import ThemeStyle from '@/components/ThemeStyle';
 import Ticker from '@/components/public/Ticker';
 import NowPlaying from '@/components/NowPlaying';
 import IdleScene from '@/components/display/IdleScene';
@@ -23,22 +25,24 @@ export default function DisplayApp() {
     return <div className="page-loading" />;
   }
 
+  const theme = resolveTheme(state.theme);
   const scene = state.display.scene;
 
   let sceneNode = null;
-  if (scene === 'idle') sceneNode = <IdleScene party={state.party} />;
-  else if (scene === 'welcome') sceneNode = <WelcomeScene party={state.party} welcome={state.display.welcome} />;
-  else if (scene === 'chronicle') sceneNode = <ChronicleScene chronicle={state.chronicle} />;
+  if (scene === 'idle') sceneNode = <IdleScene party={state.party} theme={theme} />;
+  else if (scene === 'welcome') sceneNode = <WelcomeScene party={state.party} welcome={state.display.welcome} theme={theme} />;
+  else if (scene === 'chronicle') sceneNode = <ChronicleScene chronicle={state.chronicle} theme={theme} />;
   else if (scene === 'countdown') sceneNode = <CountdownScene countdown={state.countdown} sound={state.sound} />;
-  else if (scene === 'quiz') sceneNode = <QuizScene quiz={state.quiz} />;
+  else if (scene === 'quiz') sceneNode = <QuizScene quiz={state.quiz} theme={theme} />;
   else if (scene === 'presentation') sceneNode = <PresentationScene presentation={state.presentation} />;
-  else if (scene === 'gallery') sceneNode = <GalleryScene gallery={state.gallery} />;
-  else if (scene === 'guestbook') sceneNode = <GuestbookScene guestbook={state.guestbook} />;
-  else if (scene === 'stats') sceneNode = <StatsScene stats={state.stats} />;
-  else if (scene === 'farewell') sceneNode = <FarewellScene party={state.party} />;
+  else if (scene === 'gallery') sceneNode = <GalleryScene gallery={state.gallery} theme={theme} />;
+  else if (scene === 'guestbook') sceneNode = <GuestbookScene guestbook={state.guestbook} theme={theme} />;
+  else if (scene === 'stats') sceneNode = <StatsScene stats={state.stats} theme={theme} />;
+  else if (scene === 'farewell') sceneNode = <FarewellScene party={state.party} theme={theme} />;
 
   return (
     <div className="display-root">
+      <ThemeStyle cssVars={theme.cssVars} />
       <SoundEffectsListener sound={state.sound} />
       <div className="display-body">
         <SceneTransition sceneKey={scene}>{sceneNode}</SceneTransition>

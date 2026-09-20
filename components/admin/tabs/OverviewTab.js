@@ -1,11 +1,12 @@
-import { SCENE_LABELS } from '@/lib/displayScenes';
+import { sceneLabel } from '@/lib/displayScenes';
 import { seatablePool } from '@/lib/seating';
 import QrCodePanel from './QrCodePanel';
 import ExportPanel from './ExportPanel';
 
 const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efceb3f2a09d';
 
-export default function OverviewTab({ state, onNavigate }) {
+export default function OverviewTab({ state, theme, onNavigate }) {
+  const labels = theme.labels;
   const pendingGuestbook = state.guestbook.filter((g) => g.status === 'pending').length;
   const pendingGallery = state.gallery.filter((g) => g.status === 'pending').length;
   const pendingSongs = state.songRequests.filter((r) => r.status === 'pending').length;
@@ -31,7 +32,7 @@ export default function OverviewTab({ state, onNavigate }) {
     },
     {
       title: 'Aktuelle Bühnen-Szene',
-      value: SCENE_LABELS[state.display.scene] || state.display.scene,
+      value: sceneLabel(labels, state.display.scene),
       action: 'buehne',
       cta: 'Bühne steuern'
     },
@@ -64,11 +65,8 @@ export default function OverviewTab({ state, onNavigate }) {
   return (
     <div className="stack">
       <div className="panel">
-        <p className="panel-title">Willkommen, Hofmarschall</p>
-        <p className="mt-0">
-          Von hier aus lenkt Ihr das gesamte Hoffest: Musik, Bühne, Rätsel, Gästebuch und Galerie. Alle Änderungen
-          erscheinen sofort auf der Gästeseite und dem Beamer.
-        </p>
+        <p className="panel-title">{labels.overviewWelcomeHeading}</p>
+        <p className="mt-0">{labels.overviewWelcomeBody}</p>
         <a className="btn btn-gold btn-sm" href={MANUAL_URL} target="_blank" rel="noopener noreferrer">
           Bedienungsanleitung öffnen
         </a>

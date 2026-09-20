@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useLiveState } from '@/lib/useLiveState';
 import { lastNameInitial } from '@/lib/seating';
+import { resolveTheme } from '@/lib/theme';
+import ThemeStyle from '@/components/ThemeStyle';
 import Crest from '@/components/Crest';
 
 export default function CheckInApp() {
@@ -21,6 +23,7 @@ export default function CheckInApp() {
     );
   }
 
+  const theme = resolveTheme(state.theme);
   const roster = state.checkinRoster || [];
   const presentSet = new Set(state.checkedIn || []);
 
@@ -63,8 +66,9 @@ export default function CheckInApp() {
 
   return (
     <div className="page checkin-page">
+      <ThemeStyle cssVars={theme.cssVars} />
       <div className="container checkin-inner">
-        <Crest size={100} />
+        <Crest size={100} preset={theme.preset} coupleNames={state.party.coupleNames} />
         <h1 className="public-title" style={{ marginTop: 16 }}>Willkommen!</h1>
         <p className="hero-intro center-text">{state.party.coupleNames}</p>
 
@@ -111,7 +115,7 @@ export default function CheckInApp() {
 
             {!needsLetter && searched && needle && finalMatches.length === 0 && (
               <p className="small muted center-text" style={{ marginTop: 12 }}>
-                Kein Eintrag gefunden — meldet Euch beim Hofmarschall.
+                {theme.labels.checkinNotFound}
               </p>
             )}
 

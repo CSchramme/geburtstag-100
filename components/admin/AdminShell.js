@@ -16,24 +16,28 @@ import QuizTab from './tabs/QuizTab';
 import GuestbookTab from './tabs/GuestbookTab';
 import GalleryTab from './tabs/GalleryTab';
 import PhotoboxTab from './tabs/PhotoboxTab';
+import DesignTab from './tabs/DesignTab';
 
 const MANUAL_URL = 'https://claude.ai/code/artifact/a7343a7e-bcb3-49a2-b5ca-efceb3f2a09d';
 
-const TABS = [
-  { id: 'uebersicht', label: 'Übersicht' },
-  { id: 'fest', label: 'Fest' },
-  { id: 'zusagen', label: 'Zusagen' },
-  { id: 'sitzplan', label: 'Sitzplan' },
-  { id: 'anwesenheit', label: 'Anwesenheit' },
-  { id: 'chronik', label: 'Chronik' },
-  { id: 'buehne', label: 'Bühne' },
-  { id: 'master', label: 'Master' },
-  { id: 'musik', label: 'Musik' },
-  { id: 'hofnarr', label: 'Hofnarr' },
-  { id: 'gaestebuch', label: 'Gästebuch' },
-  { id: 'galerie', label: 'Galerie' },
-  { id: 'fotobox', label: 'Fotobox' }
-];
+function buildTabs(labels) {
+  return [
+    { id: 'uebersicht', label: 'Übersicht' },
+    { id: 'fest', label: 'Fest' },
+    { id: 'design', label: 'Design' },
+    { id: 'zusagen', label: 'Zusagen' },
+    { id: 'sitzplan', label: 'Sitzplan' },
+    { id: 'anwesenheit', label: 'Anwesenheit' },
+    { id: 'chronik', label: labels.adminTabChronicle },
+    { id: 'buehne', label: 'Bühne' },
+    { id: 'master', label: 'Master' },
+    { id: 'musik', label: 'Musik' },
+    { id: 'hofnarr', label: labels.adminTabQuiz },
+    { id: 'gaestebuch', label: 'Gästebuch' },
+    { id: 'galerie', label: 'Galerie' },
+    { id: 'fotobox', label: 'Fotobox' }
+  ];
+}
 
 function pendingCount(list) {
   return list.filter((x) => x.status === 'pending').length;
@@ -41,10 +45,12 @@ function pendingCount(list) {
 
 const TOAST_LIFETIME_MS = 9000;
 
-export default function AdminShell({ state, connected, onLogout }) {
+export default function AdminShell({ state, theme, connected, onLogout }) {
   const [tab, setTab] = useState('uebersicht');
   const [toasts, setToasts] = useState([]);
   const seenRef = useRef(null);
+  const labels = theme.labels;
+  const TABS = buildTabs(labels);
 
   // Notify about new guestbook/gallery/song-request submissions as they
   // arrive, regardless of which tab is currently open - a popup + chime,
@@ -136,9 +142,9 @@ export default function AdminShell({ state, connected, onLogout }) {
 
       <header className="admin-topbar">
         <div className="admin-topbar-brand">
-          <Crest size={36} />
+          <Crest size={36} preset={theme.preset} coupleNames={state.party.coupleNames} />
           <div>
-            <strong>Kommandozentrale</strong>
+            <strong>{labels.adminBrandTitle}</strong>
             <span className="muted small"> · {state.party.coupleNames}</span>
           </div>
         </div>
@@ -171,16 +177,23 @@ export default function AdminShell({ state, connected, onLogout }) {
       </nav>
 
       <main className="admin-content">
-        {tab === 'uebersicht' && <OverviewTab state={state} onNavigate={setTab} />}
+        {tab === 'uebersicht' && <OverviewTab state={state} theme={theme} onNavigate={setTab} />}
         {tab === 'fest' && <PartyTab party={state.party} impressum={state.impressum} />}
+        {tab === 'design' && <DesignTab themeState={state.theme} theme={theme} />}
         {tab === 'zusagen' && <RsvpTab rsvps={state.rsvps} />}
         {tab === 'sitzplan' && (
           <SeatingTab seating={state.seating} guests={state.guests} rsvps={state.rsvps} checkedIn={state.checkedIn} />
         )}
         {tab === 'anwesenheit' && <AttendanceTab guests={state.guests} rsvps={state.rsvps} checkedIn={state.checkedIn} />}
-        {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} />}
+        {tab === 'chronik' && <ChronicleTab chronicle={state.chronicle} theme={theme} />}
         {tab === 'buehne' && (
-          <StageTab display={state.display} ticker={state.ticker} countdown={state.countdown} presentation={state.presentation} />
+          <StageTab
+            display={state.display}
+            ticker={state.ticker}
+            countdown={state.countdown}
+            presentation={state.presentation}
+            theme={theme}
+          />
         )}
         {tab === 'master' && <MasterTab sound={state.sound} songRequests={state.songRequests} />}
         {tab === 'musik' && <MusicTab music={state.music} />}

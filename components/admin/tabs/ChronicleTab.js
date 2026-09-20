@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { api } from '@/lib/api';
 
-export default function ChronicleTab({ chronicle }) {
+export default function ChronicleTab({ chronicle, theme }) {
+  const labels = theme.labels;
   const [draft, setDraft] = useState({ time: '', title: '', text: '' });
   const [busy, setBusy] = useState(false);
 
@@ -31,7 +32,7 @@ export default function ChronicleTab({ chronicle }) {
   return (
     <div className="stack">
       <form className="panel" onSubmit={addItem}>
-        <p className="panel-title">Neuer Eintrag in die Chronik</p>
+        <p className="panel-title">{labels.chronicleFormTitle}</p>
         <div className="form-grid">
           <div className="field">
             <label className="label" htmlFor="c-time">Uhrzeit</label>
@@ -66,7 +67,7 @@ export default function ChronicleTab({ chronicle }) {
           />
         </div>
         <button type="submit" className="btn btn-gold" disabled={busy}>
-          In die Chronik eintragen
+          {labels.chronicleSubmitButton}
         </button>
       </form>
 

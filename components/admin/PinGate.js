@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Crest from '@/components/Crest';
 
-export default function PinGate({ onUnlock }) {
+export default function PinGate({ onUnlock, theme, coupleNames }) {
+  const labels = theme.labels;
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -20,7 +21,7 @@ export default function PinGate({ onUnlock }) {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
-        throw new Error(json.error || 'Zutritt verweigert');
+        throw new Error(json.error || labels.pinGateErrorFallback);
       }
       onUnlock();
     } catch (err) {
@@ -34,9 +35,9 @@ export default function PinGate({ onUnlock }) {
   return (
     <div className="pin-gate">
       <form className="panel pin-gate-card" onSubmit={handleSubmit}>
-        <Crest size={64} className="pin-gate-crest" />
-        <h1 className="pin-gate-title">Pforte zum Thronsaal</h1>
-        <p className="muted center-text small">Nur Berechtigte betreten die Kommandozentrale des Hoffestes.</p>
+        <Crest size={64} className="pin-gate-crest" preset={theme.preset} coupleNames={coupleNames} />
+        <h1 className="pin-gate-title">{labels.pinGateTitle}</h1>
+        <p className="muted center-text small">{labels.pinGateSubtitle}</p>
         <div className="field">
           <label className="label" htmlFor="pin">PIN</label>
           <input
@@ -53,7 +54,7 @@ export default function PinGate({ onUnlock }) {
         </div>
         {error && <p className="form-error center-text">{error}</p>}
         <button type="submit" className="btn btn-gold btn-block" disabled={busy || !pin}>
-          {busy ? 'Prüfe Siegel …' : 'Einlass begehren'}
+          {busy ? labels.pinGateSubmitting : labels.pinGateSubmitLabel}
         </button>
       </form>
     </div>

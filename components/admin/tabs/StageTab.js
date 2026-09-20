@@ -3,21 +3,21 @@
 import { useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import CountdownClock from '@/components/CountdownClock';
-import { SCENES, ROTATABLE_SCENE_IDS, SCENE_LABELS, DEFAULT_ROTATION_SCENES } from '@/lib/displayScenes';
+import { SCENES, ROTATABLE_SCENE_IDS, DEFAULT_ROTATION_SCENES, sceneLabel } from '@/lib/displayScenes';
 
-export default function StageTab({ display, ticker, countdown, presentation }) {
+export default function StageTab({ display, ticker, countdown, presentation, theme }) {
   return (
     <div className="stack">
-      <SceneSwitcher active={display.scene} />
-      <RotationPanel autoRotate={display.autoRotate} />
-      <TickerPanel ticker={ticker} />
+      <SceneSwitcher active={display.scene} labels={theme.labels} />
+      <RotationPanel autoRotate={display.autoRotate} labels={theme.labels} />
+      <TickerPanel ticker={ticker} labels={theme.labels} />
       <CountdownPanel countdown={countdown} />
       <PresentationPanel presentation={presentation} />
     </div>
   );
 }
 
-function SceneSwitcher({ active }) {
+function SceneSwitcher({ active, labels }) {
   async function setScene(scene) {
     await api('/api/admin/display', { method: 'PUT', body: { scene } });
   }
@@ -33,7 +33,7 @@ function SceneSwitcher({ active }) {
             className={`btn ${active === s.id ? 'btn-gold' : 'btn-ghost'}`}
             onClick={() => setScene(s.id)}
           >
-            {s.label}
+            {sceneLabel(labels, s.id)}
             {!s.rotatable && <span className="scene-no-rotate-mark" title="Nimmt nicht an der Automatik teil">•</span>}
           </button>
         ))}
@@ -42,7 +42,7 @@ function SceneSwitcher({ active }) {
   );
 }
 
-function RotationPanel({ autoRotate }) {
+function RotationPanel({ autoRotate, labels }) {
   const [interval, setInterval_] = useState(autoRotate.intervalSeconds || 20);
   const selected = autoRotate.selectedScenes || DEFAULT_ROTATION_SCENES;
 
@@ -72,11 +72,7 @@ function RotationPanel({ autoRotate }) {
           aria-label="Automatik ein-/ausschalten"
         />
       </div>
-      <p className="small muted mt-0">
-        Wechselt selbstständig zwischen den ausgewählten Szenen — Galerie und Gästebuch werden dabei übersprungen,
-        solange dort nichts freigegeben ist. Countdown, Hofnarr, Präsentation und Willkommen bleiben immer außen vor
-        und werden nur manuell bzw. beim Einchecken gezeigt.
-      </p>
+      <p className="small muted mt-0">{labels.rotationHelpText}</p>
 
       <div className="inline-form" style={{ marginTop: 10 }}>
         {ROTATABLE_SCENE_IDS.map((sceneId) => (
@@ -86,7 +82,7 @@ function RotationPanel({ autoRotate }) {
               checked={selected.includes(sceneId)}
               onChange={() => toggleScene(sceneId)}
             />
-            {SCENE_LABELS[sceneId]}
+            {sceneLabel(labels, sceneId)}
           </label>
         ))}
       </div>
@@ -121,7 +117,7 @@ function RotationPanel({ autoRotate }) {
   );
 }
 
-function TickerPanel({ ticker }) {
+function TickerPanel({ ticker, labels }) {
   const [text, setText] = useState(ticker.text);
 
   async function save(next) {
@@ -148,7 +144,7 @@ function TickerPanel({ ticker }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onBlur={() => save({ text, active: ticker.active })}
-          placeholder={'Der Met wird um 20 Uhr ausgeschenkt\nBitte Handys stumm schalten\nDie Toilette ist hinter der Bühne'}
+          placeholder={labels.tickerPlaceholderExample}
         />
       </div>
     </div>

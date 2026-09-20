@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 
-export default function RsvpSection() {
+export default function RsvpSection({ theme }) {
+  const labels = theme.labels;
   const [name, setName] = useState('');
   const [attending, setAttending] = useState('yes');
   const [guestCount, setGuestCount] = useState(1);
@@ -39,9 +40,7 @@ export default function RsvpSection() {
       <form className="panel" onSubmit={handleSubmit}>
         {status === 'done' ? (
           <p className="center-text">
-            {attending === 'yes'
-              ? 'Eure Zusage ist beim Hofmarschall eingetroffen — wir freuen uns auf Euch!'
-              : 'Schade, aber danke für die Rückmeldung.'}
+            {attending === 'yes' ? labels.rsvpConfirmedYes : 'Schade, aber danke für die Rückmeldung.'}
           </p>
         ) : (
           <div className="stack">
@@ -51,7 +50,7 @@ export default function RsvpSection() {
             </div>
 
             <div className="field">
-              <span className="label">Kommt Ihr zum Hoffest?</span>
+              <span className="label">{labels.rsvpQuestionLabel}</span>
               <div className="inline-form">
                 <button
                   type="button"

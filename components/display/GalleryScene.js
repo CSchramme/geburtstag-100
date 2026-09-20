@@ -2,13 +2,13 @@
 
 import { useRotatingIndex } from '@/lib/useRotatingIndex';
 
-export default function GalleryScene({ gallery }) {
+export default function GalleryScene({ gallery, theme }) {
   const index = useRotatingIndex(gallery.length, 6000);
 
   if (!gallery.length) {
     return (
       <div className="display-scene display-scene-center">
-        <p className="display-muted">Noch hängen keine Bilder in der Galerie des Hofes.</p>
+        <p className="display-muted">{theme.labels.gallerySceneEmptyState}</p>
       </div>
     );
   }

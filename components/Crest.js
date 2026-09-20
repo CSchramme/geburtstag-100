@@ -1,4 +1,38 @@
-export default function Crest({ size = 96, className = '' }) {
+import { getInitials } from '@/lib/theme';
+
+export default function Crest({ size = 96, className = '', preset = 'medieval', coupleNames = '' }) {
+  const initials = getInitials(coupleNames);
+  const label = coupleNames ? `Wappen ${coupleNames}` : 'Wappen';
+
+  if (preset !== 'medieval') {
+    return (
+      <svg
+        className={`crest crest-modern ${className}`}
+        width={size}
+        height={size}
+        viewBox="0 0 120 120"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label={label}
+      >
+        <circle cx="60" cy="60" r="56" fill="none" stroke="var(--gold)" strokeWidth="2" opacity="0.8" />
+        <circle cx="60" cy="60" r="47" fill="none" stroke="var(--gold)" strokeWidth="1" opacity="0.4" />
+        <text
+          x="60"
+          y="72"
+          textAnchor="middle"
+          fontFamily="var(--font-heading)"
+          fontWeight="600"
+          fontSize="34"
+          fill="var(--gold)"
+        >
+          {initials}
+        </text>
+      </svg>
+    );
+  }
+
   return (
     <svg
       className={`crest ${className}`}
@@ -8,7 +42,7 @@ export default function Crest({ size = 96, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Wappen Tamara und Ralph"
+      aria-label={label}
     >
       <defs>
         <linearGradient id="crestGold" x1="0" y1="0" x2="0" y2="1">
@@ -54,7 +88,7 @@ export default function Crest({ size = 96, className = '' }) {
         fontSize="40"
         fill="url(#crestGold)"
       >
-        T&amp;R
+        {initials}
       </text>
     </svg>
   );

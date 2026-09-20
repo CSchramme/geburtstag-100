@@ -1,8 +1,9 @@
-export default function QuizTeaser({ quiz }) {
+export default function QuizTeaser({ quiz, theme }) {
   if (!quiz?.visible) return null;
+  const labels = theme.labels;
   return (
     <section id="raetsel" className="section">
-      <h2 className="section-title">Das Rätsel des Hofnarren</h2>
+      <h2 className="section-title">{labels.quizSectionHeading}</h2>
       <div className="panel quiz-card">
         <p className="label center-text mt-0">
           {quiz.roundName} · Person {quiz.candidateNumber} von {quiz.candidateCount}
@@ -16,7 +17,7 @@ export default function QuizTeaser({ quiz }) {
             ))}
           </ul>
         ) : (
-          <p className="muted center-text">Der Hofnarr schweigt noch – gleich kommt der erste Hinweis …</p>
+          <p className="muted center-text">{labels.quizEmptyState}</p>
         )}
       </div>
     </section>

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 
-export default function GuestbookSection({ guestbook }) {
+export default function GuestbookSection({ guestbook, theme }) {
+  const labels = theme.labels;
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('idle');
@@ -35,11 +36,11 @@ export default function GuestbookSection({ guestbook }) {
 
   return (
     <section id="gaestebuch" className="section">
-      <h2 className="section-title">Das Gästebuch des Hofes</h2>
+      <h2 className="section-title">{labels.guestbookSectionHeading}</h2>
 
       <form className="panel" onSubmit={handleSubmit}>
         {status === 'done' ? (
-          <p className="center-text">Eure Worte wurden im Buche vermerkt und warten auf den Segen des Hofmarschalls.</p>
+          <p className="center-text">{labels.guestbookSubmitThanks}</p>
         ) : (
           <div className="stack">
             <div className="field">

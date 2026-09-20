@@ -52,7 +52,8 @@ function LikeButton({ photoId, likes }) {
   );
 }
 
-export default function GallerySection({ gallery }) {
+export default function GallerySection({ gallery, theme }) {
+  const labels = theme.labels;
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
@@ -87,7 +88,7 @@ export default function GallerySection({ gallery }) {
   return (
     <section id="galerie" className="section">
       <div className="spread">
-        <h2 className="section-title mt-0">Die Bildergalerie des Hofes</h2>
+        <h2 className="section-title mt-0">{labels.gallerySectionHeading}</h2>
         <button type="button" className="btn btn-sm btn-ghost" onClick={() => setOpen((v) => !v)}>
           {open ? 'Schließen' : 'Foto einreichen'}
         </button>
@@ -96,9 +97,7 @@ export default function GallerySection({ gallery }) {
       {open && (
         <form ref={formRef} className="panel gallery-form" onSubmit={handleSubmit}>
           {status === 'done' ? (
-            <p className="center-text">
-              Dank sei Euch! Euer Bild wandert zur Prüfung durch den Hofmarschall, ehe es hier erscheint.
-            </p>
+            <p className="center-text">{labels.galleryUploadThanks}</p>
           ) : (
             <>
               <div className="field">
@@ -126,7 +125,7 @@ export default function GallerySection({ gallery }) {
         <div className="gallery-grid">
           {gallery.map((photo) => (
             <figure key={photo.id} className="gallery-item">
-              <img src={photo.url} alt={photo.caption || 'Foto vom Hoffest'} loading="lazy" />
+              <img src={photo.url} alt={photo.caption || labels.galleryImageAltFallback} loading="lazy" />
               <LikeButton photoId={photo.id} likes={photo.likes} />
               {(photo.caption || photo.name) && (
                 <figcaption>
@@ -138,7 +137,7 @@ export default function GallerySection({ gallery }) {
           ))}
         </div>
       ) : (
-        <p className="muted center-text">Noch hängen keine Bilder in der Galerie des Hofes.</p>
+        <p className="muted center-text">{labels.galleryEmptyState}</p>
       )}
     </section>
   );

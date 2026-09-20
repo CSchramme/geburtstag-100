@@ -1,4 +1,4 @@
-export default function StatsScene({ stats }) {
+export default function StatsScene({ stats, theme }) {
   const { presentCount, expectedCount, guestbookCount, galleryCount, songRequestCount, topPhoto } = stats;
 
   const tiles = [
@@ -10,7 +10,7 @@ export default function StatsScene({ stats }) {
 
   return (
     <div className="display-scene display-scene-center">
-      <p className="display-heading">Das Hoffest in Zahlen</p>
+      <p className="display-heading">{theme.labels.statsSceneHeading}</p>
       <div className="display-stats-grid">
         {tiles.map((s) => (
           <div key={s.label} className="display-stat-tile">
